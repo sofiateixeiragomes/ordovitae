@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inscrição — Ordo Vitae</title>
+<meta name="description" content="Formulário de inscrição no retiro Ordo Vitae.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:site_name" content="Ordo Vitae">
+<meta property="og:title" content="Inscrição — Ordo Vitae">
+<meta property="og:description" content="Formulário de inscrição no retiro Ordo Vitae.">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  /* Formulário — estilos específicos */
+  .form-section {
+    margin-bottom: 3.5rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .form-section:last-of-type { border-bottom: none; }
+  .form-section .section-num {
+    font-family: var(--serif);
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+  }
+  .form-section h2 { font-size: 1.9rem; margin-bottom: 0.5rem; }
+  .form-section .section-intro {
+    color: var(--text-muted);
+    font-size: 0.97rem;
+    margin-bottom: 2rem;
+  }
+  .field-group { margin-bottom: 1.5rem; }
+  .field-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  .field-group label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    color: var(--text);
+  }
+  .field-group .required { color: #A34432; margin-left: 0.15rem; }
+  .field-group input[type=text],
+  .field-group input[type=email],
+  .field-group input[type=tel],
+  .field-group input[type=date],
+  .field-group input[type=number],
+  .field-group select,
+  .field-group textarea {
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    font-family: var(--sans);
+    font-size: 0.97rem;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    color: var(--text);
+    transition: border-color 0.15s;
+  }
+  .field-group input:focus,
+  .field-group select:focus,
+  .field-group textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .field-group textarea { min-height: 90px; resize: vertical; }
+  .field-hint {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+  .radio-group { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+  .radio-group label {
+    display: inline-flex;
+    align-items: center;
+    font-weight: 400;
+    font-size: 0.97rem;
+    margin: 0;
+    cursor: pointer;
+  }
+  .radio-group input { margin-right: 0.4rem; }
+  .conditional {
+    display: none;
+    margin-top: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--bg-soft);
+    border-left: 2px solid var(--accent-warm);
+    border-radius: 2px;
+  }
+  .conditional.show { display: block; }
+
+  /* Exames */
+  .exame-row {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1.5fr auto;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .exame-row:first-child { padding-top: 0; }
+  .exame-row .exame-nome { font-size: 0.95rem; font-weight: 500; }
+  .exame-row .radio-group { gap: 0.75rem; }
+  .exame-row .radio-group label { font-size: 0.88rem; }
+  .exame-row input[type=date],
+  .exame-row input[type=file] { font-size: 0.85rem; padding: 0.4rem; width: 100%; }
+  .exame-campo { min-width: 0; }
+  .exame-aviso {
+    display: block;
+    margin-top: 0.3rem;
+    font-size: 0.76rem;
+    line-height: 1.35;
+  }
+  .exame-aviso.ok { color: var(--accent); }
+  .exame-aviso.alerta { color: #8A5A2B; font-weight: 500; }
+  .exame-aviso.erro { color: #A34432; font-weight: 500; }
+  /* Rótulos que só aparecem no celular, onde o cabeçalho da tabela some */
+  .mob-label { display: none; }
+  .exame-header {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1.5fr auto;
+    gap: 0.75rem;
+    padding: 0 0 0.5rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 600;
+    border-bottom: 2px solid var(--accent);
+    margin-bottom: 0.25rem;
+  }
+  @media (max-width: 700px) {
+    .exame-header { display: none; }
+    .exame-row {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+      padding: 1.25rem 0;
+    }
+    .exame-row .exame-nome {
+      font-size: 1.02rem;
+      font-weight: 600;
+      color: var(--accent);
+    }
+    .mob-label {
+      display: block;
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+  }
+
+  /* Termos */
+  .terms-list {
+    background: var(--bg-soft);
+    padding: 1.5rem 1.75rem;
+    border-radius: 2px;
+  }
+  .terms-list label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    margin-bottom: 0.85rem;
+    font-size: 0.95rem;
+    font-weight: 400;
+    cursor: pointer;
+    line-height: 1.5;
+  }
+  .terms-list label:last-child { margin-bottom: 0; }
+  .terms-list input[type=checkbox] { margin-top: 0.25rem; flex-shrink: 0; }
+
+  /* Aviso flutuante de rascunho salvo */
+  .aviso-rascunho {
+    position: fixed;
+    bottom: 1.25rem;
+    right: 1.25rem;
+    background: var(--accent);
+    color: var(--bg);
+    padding: 0.6rem 1.1rem;
+    border-radius: 2px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    z-index: 200;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.25s, transform 0.25s;
+    pointer-events: none;
+  }
+  .aviso-rascunho.visivel { opacity: 1; transform: translateY(0); }
+
+  /* Submit + feedback */
+  .submit-area {
+    margin-top: 3rem;
+    text-align: center;
+  }
+  .submit-area .btn {
+    padding: 1rem 3rem;
+    font-size: 1rem;
+  }
+  .submit-area .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  .submit-help {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+  .form-error {
+    background: #FDECE7;
+    color: #A34432;
+    padding: 1rem 1.25rem;
+    border-radius: 2px;
+    margin: 1.5rem 0;
+    font-size: 0.95rem;
+    display: none;
+  }
+  .form-error.show { display: block; }
+
+  /* Confirmação */
+  .confirmation {
+    display: none;
+    text-align: center;
+    padding: 3rem 2rem;
+  }
+  .confirmation.show { display: block; }
+  .confirmation-icon {
+    font-size: 3.5rem;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+  }
+  .confirmation h1 { margin-bottom: 1rem; }
+  .confirmation .senha-box {
+    display: inline-block;
+    padding: 1.25rem 2rem;
+    background: var(--bg-soft);
+    border: 1px dashed var(--accent);
+    border-radius: 2px;
+    margin: 2rem 0;
+  }
+  .confirmation .senha-box .label {
+    font-size: 0.78rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+  }
+  .confirmation .senha-box .senha {
+    font-family: var(--serif);
+    font-size: 1.8rem;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="index.html" class="logo">
+      Ordo Vitae
+      <small>Comunidade Católica Shalom</small>
+    </a>
+    <nav>
+      <ul>
+        <li><a href="index.html">Início</a></li>
+        <li><a href="o-projeto.html">O projeto</a></li>
+        <li><a href="inscricoes.html" class="active">Inscrições</a></li>
+        <li><a href="contato.html">Contato</a></li>
+        <li><a href="participantes.html">Participantes</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<div class="page-hero">
+  <div class="container">
+    <p class="eyebrow">Inscrição</p>
+    <h1>Formulário de inscrição</h1>
+    <p>Preencha com calma. Você pode retomar depois se precisar — os dados ficam salvos neste navegador enquanto você digita.</p>
+  </div>
+</div>
+
+<section>
+  <div class="container">
+
+    <div id="formArea">
+
+      <p class="lead" style="margin-bottom: 2.5rem;">
+        Estes dados são recebidos pela coordenação sob sigilo profissional. As informações de saúde física e mental servem exclusivamente para o cuidado da equipe durante o retiro e para eventuais encaminhamentos clínicos.
+      </p>
+
+      <div class="aviso-rascunho" id="avisoRascunho" role="status" aria-live="polite">✓ Rascunho salvo</div>
+
+      <form id="inscricaoForm" novalidate>
+
+        <!-- 1. IDENTIFICAÇÃO -->
+        <div class="form-section">
+          <p class="section-num">Bloco 1</p>
+          <h2>Identificação</h2>
+          <p class="section-intro">Seus dados pessoais.</p>
+
+          <div class="field-row">
+            <div class="field-group">
+              <label>Nome completo <span class="required">*</span></label>
+              <input type="text" name="nome" required>
+            </div>
+            <div class="field-group">
+              <label>Como gostaria de ser chamado(a)</label>
+              <input type="text" name="apelido">
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field-group">
+              <label>Data de nascimento <span class="required">*</span></label>
+              <input type="date" name="nascimento" required>
+            </div>
+            <div class="field-group">
+              <label>CPF <span class="required">*</span></label>
+              <input type="text" name="cpf" placeholder="000.000.000-00" required>
+            </div>
+            <div class="field-group">
+              <label>Estado civil <span class="required">*</span></label>
+              <select name="estadoCivil" required>
+                <option value="">Selecione…</option>
+                <option>Solteiro(a)</option>
+                <option>Casado(a)</option>
+                <option>Viúvo(a)</option>
+                <option>Divorciado(a)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label>Endereço completo <span class="required">*</span></label>
+            <input type="text" name="endereco" placeholder="Rua, número, complemento, bairro, cidade/UF, CEP" required>
+          </div>
+
+          <div class="field-row">
+            <div class="field-group">
+              <label>Telefone (WhatsApp) <span class="required">*</span></label>
+              <input type="tel" name="telefone" required>
+              <span class="field-hint">Fora do Brasil? Inclua o DDI com <strong>+</strong> (ex.: +351 9…).</span>
+            </div>
+            <div class="field-group">
+              <label>Email <span class="required">*</span></label>
+              <input type="email" name="email" required>
+              <span class="field-hint">Usaremos este email para enviar sua senha da área de participantes.</span>
+            </div>
+          </div>
+
+          <h3 style="font-size: 1.2rem; margin: 2rem 0 1rem;">Contato de emergência</h3>
+          <div class="field-row">
+            <div class="field-group">
+              <label>Nome <span class="required">*</span></label>
+              <input type="text" name="emergenciaNome" required>
+            </div>
+            <div class="field-group">
+              <label>Parentesco <span class="required">*</span></label>
+              <input type="text" name="emergenciaParentesco" required>
+            </div>
+            <div class="field-group">
+              <label>Telefone <span class="required">*</span></label>
+              <input type="tel" name="emergenciaTelefone" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. VIDA COMUNITÁRIA -->
+        <div class="form-section">
+          <p class="section-num">Bloco 2</p>
+          <h2>Vida comunitária</h2>
+          <p class="section-intro">Sua situação atual na Comunidade Shalom.</p>
+
+          <div class="field-row">
+            <div class="field-group">
+              <label>Regional <span class="required">*</span></label>
+              <input type="text" name="regional" required>
+            </div>
+            <div class="field-group">
+              <label>Casa comunitária atual <span class="required">*</span></label>
+              <input type="text" name="casa" required>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field-group">
+              <label>Ano das promessas definitivas <span class="required">*</span></label>
+              <input type="number" name="anoPromessas" min="1980" max="2026" required>
+            </div>
+            <div class="field-group">
+              <label>Função atual na Comunidade <span class="required">*</span></label>
+              <input type="text" name="funcao" required>
+            </div>
+          </div>
+
+          <h3 style="font-size: 1.2rem; margin: 2rem 0 1rem;">Formador comunitário (FC)</h3>
+          <div class="field-row">
+            <div class="field-group">
+              <label>Nome <span class="required">*</span></label>
+              <input type="text" name="fcNome" required>
+            </div>
+            <div class="field-group">
+              <label>Contato (email ou telefone) <span class="required">*</span></label>
+              <input type="text" name="fcContato" required>
+            </div>
+          </div>
+
+          <h3 style="font-size: 1.2rem; margin: 2rem 0 1rem;">Responsável local (RL)</h3>
+          <div class="field-row">
+            <div class="field-group">
+              <label>Nome <span class="required">*</span></label>
+              <input type="text" name="rlNome" required>
+            </div>
+            <div class="field-group">
+              <label>Contato (email ou telefone) <span class="required">*</span></label>
+              <input type="text" name="rlContato" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. SAÚDE GERAL -->
+        <div class="form-section">
+          <p class="section-num">Bloco 3</p>
+          <h2>Saúde geral</h2>
+          <p class="section-intro">Informações de saúde física relevantes para o cuidado durante o retiro.</p>
+
+          <div class="field-group">
+            <label>Doenças crônicas em acompanhamento</label>
+            <textarea name="doencas" placeholder="Ex.: hipertensão, diabetes, tireoidite. Se não tiver, escreva 'nenhuma'."></textarea>
+          </div>
+
+          <div class="field-group">
+            <label>Alergias (medicamentos, alimentos, outros)</label>
+            <textarea name="alergias" placeholder="Se não tiver, escreva 'nenhuma'."></textarea>
+          </div>
+
+          <div class="field-group">
+            <label>Cirurgias relevantes</label>
+            <textarea name="cirurgias" placeholder="Cirurgia + ano. Se não tiver, escreva 'nenhuma'."></textarea>
+          </div>
+
+          <div class="field-group">
+            <label>Medicações em uso contínuo</label>
+            <textarea name="medicacoes" placeholder="Nome do medicamento + dose + frequência. Se não usa, escreva 'nenhuma'."></textarea>
+          </div>
+        </div>
+
+        <!-- 4. SAÚDE MENTAL -->
+        <div class="form-section">
+          <p class="section-num">Bloco 4</p>
+          <h2>Saúde mental</h2>
+          <p class="section-intro">Histórico e acompanhamento atual em psicoterapia e psiquiatria. Estas informações são essenciais para o cuidado da equipe.</p>
+
+          <!-- Psicoterapia -->
+          <div class="field-group">
+            <label>Já fez psicoterapia? <span class="required">*</span></label>
+            <div class="radio-group">
+              <label><input type="radio" name="psicoterapiaPassada" value="sim" data-toggle="psicoterapiaPassadaDet" required> Sim</label>
+              <label><input type="radio" name="psicoterapiaPassada" value="nao" required> Não</label>
+            </div>
+            <div class="conditional" id="psicoterapiaPassadaDet">
+              <label>Profissional, período e motivo</label>
+              <textarea name="psicoterapiaPassadaDetalhes" placeholder="Ex.: Dra. Fulana, 2018-2020, ansiedade."></textarea>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label>Faz psicoterapia atualmente? <span class="required">*</span></label>
+            <div class="radio-group">
+              <label><input type="radio" name="psicoterapiaAtual" value="sim" data-toggle="psicoterapiaAtualDet" required> Sim</label>
+              <label><input type="radio" name="psicoterapiaAtual" value="nao" required> Não</label>
+            </div>
+            <div class="conditional" id="psicoterapiaAtualDet">
+              <label>Profissional (nome + contato) e há quanto tempo</label>
+              <textarea name="psicoterapiaAtualDetalhes"></textarea>
+              <span class="field-hint">A coordenação pode entrar em contato com o profissional para articulação durante o retiro.</span>
+            </div>
+          </div>
+
+          <!-- Psiquiatria -->
+          <div class="field-group">
+            <label>Já fez acompanhamento psiquiátrico? <span class="required">*</span></label>
+            <div class="radio-group">
+              <label><input type="radio" name="psiquiatriaPassada" value="sim" data-toggle="psiquiatriaPassadaDet" required> Sim</label>
+              <label><input type="radio" name="psiquiatriaPassada" value="nao" required> Não</label>
+            </div>
+            <div class="conditional" id="psiquiatriaPassadaDet">
+              <label>Profissional, período e motivo</label>
+              <textarea name="psiquiatriaPassadaDetalhes"></textarea>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label>Faz acompanhamento psiquiátrico atualmente? <span class="required">*</span></label>
+            <div class="radio-group">
+              <label><input type="radio" name="psiquiatriaAtual" value="sim" data-toggle="psiquiatriaAtualDet" required> Sim</label>
+              <label><input type="radio" name="psiquiatriaAtual" value="nao" required> Não</label>
+            </div>
+            <div class="conditional" id="psiquiatriaAtualDet">
+              <label>Profissional (nome + contato)</label>
+              <textarea name="psiquiatriaAtualDetalhes"></textarea>
+            </div>
+          </div>
+
+          <!-- Medicação psiquiátrica -->
+          <div class="field-group">
+            <label>Uso atual de psicofármacos? <span class="required">*</span></label>
+            <div class="radio-group">
+              <label><input type="radio" name="psicofarmacos" value="sim" data-toggle="psicofarmacosDet" required> Sim</label>
+              <label><input type="radio" name="psicofarmacos" value="nao" required> Não</label>
+            </div>
+            <div class="conditional" id="psicofarmacosDet">
+              <label>Quais e em que dose</label>
+              <textarea name="psicofarmacosDetalhes" placeholder="Nome + dose + frequência."></textarea>
+            </div>
+          </div>
+
+          <!-- Internações -->
+          <div class="field-group">
+            <label>Já teve internação psiquiátrica? <span class="required">*</span></label>
+            <div class="radio-group">
+              <label><input type="radio" name="internacao" value="sim" data-toggle="internacaoDet" required> Sim</label>
+              <label><input type="radio" name="internacao" value="nao" required> Não</label>
+            </div>
+            <div class="conditional" id="internacaoDet">
+              <label>Quando, motivo e local</label>
+              <textarea name="internacaoDetalhes"></textarea>
+            </div>
+          </div>
+
+          <!-- Autolesão -->
+          <div class="field-group">
+            <label>Já teve histórico de autolesão ou tentativa de suicídio? <span class="required">*</span></label>
+            <div class="radio-group">
+              <label><input type="radio" name="autolesao" value="sim" data-toggle="autolesaoDet" required> Sim</label>
+              <label><input type="radio" name="autolesao" value="nao" required> Não</label>
+            </div>
+            <div class="conditional" id="autolesaoDet">
+              <label>Quando e contexto (fique à vontade — o campo é opcional se for delicado)</label>
+              <textarea name="autolesaoDetalhes"></textarea>
+              <span class="field-hint">Este dado nos ajuda a preparar o cuidado adequado. Fica sob sigilo profissional.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. TRIAGEM LABORATORIAL -->
+        <div class="form-section">
+          <p class="section-num">Bloco 5</p>
+          <h2>Triagem laboratorial</h2>
+          <p class="section-intro">
+            Os exames precisam estar válidos <strong>na data do retiro</strong> — ou seja, realizados a partir de <strong id="ovValidadeExames">abril de 2026</strong>. Para cada um, informe se já realizou (com a data) ou marque "Não realizei" — nesse caso, a coordenação enviará o pedido para você.
+          </p>
+
+          <div class="exame-header">
+            <div>Exame</div>
+            <div>Situação</div>
+            <div>Data (se realizado)</div>
+            <div>Anexo</div>
+          </div>
+
+          <div id="examesContainer"></div>
+        </div>
+
+        <!-- 6. DIÁLOGO SOBRE PAGAMENTO -->
+        <div class="form-section">
+          <p class="section-num">Bloco 6</p>
+          <h2>Diálogo sobre pagamento</h2>
+          <p class="section-intro">
+            O valor da participação ainda está em definição. Este bloco não bloqueia a inscrição — mas precisamos saber se você já conversou com sua autoridade sobre o custo.
+          </p>
+
+          <div class="field-group">
+            <label>Você já conversou com sua autoridade/missão sobre como será o pagamento? <span class="required">*</span></label>
+            <div class="radio-group">
+              <label><input type="radio" name="dialogoPagamento" value="sim" data-toggle="pagamentoDet" required> Sim</label>
+              <label><input type="radio" name="dialogoPagamento" value="nao" required> Ainda não</label>
+            </div>
+            <div class="conditional" id="pagamentoDet">
+              <label>Como está encaminhado?</label>
+              <textarea name="pagamentoDetalhes" placeholder="Ex.: a missão vai custear integralmente / vou pagar em X parcelas / dividido entre eu e a missão."></textarea>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label>Anexar comprovante de pagamento (opcional)</label>
+            <input type="file" name="comprovante" accept="image/*,application/pdf">
+            <span class="field-hint">Se já houve pagamento parcial ou integral. Aceita PDF ou imagem. Não obrigatório.</span>
+          </div>
+        </div>
+
+        <!-- 7. TERMOS -->
+        <div class="form-section">
+          <p class="section-num">Bloco 7</p>
+          <h2>Termos e confirmação</h2>
+          <p class="section-intro">Leia com atenção antes de marcar cada item.</p>
+
+          <div class="terms-list">
+            <label>
+              <input type="checkbox" name="termoConsentimento" required>
+              <span>Declaro que li e aceito o <strong>termo de consentimento informado</strong>, compreendendo a natureza do retiro Ordo Vitae como processo espiritual e humano de dois anos, conduzido por equipe multiprofissional.</span>
+            </label>
+            <label>
+              <input type="checkbox" name="termoSigilo" required>
+              <span>Aceito o <strong>termo de sigilo e confidencialidade</strong>. Comprometo-me a guardar sigilo sobre o que vier a saber a respeito dos outros participantes, do mesmo modo que a equipe se compromete comigo.</span>
+            </label>
+            <label>
+              <input type="checkbox" name="termoVeracidade" required>
+              <span>Declaro que as informações prestadas neste formulário são <strong>verdadeiras e completas</strong>. Comprometo-me a comunicar à coordenação qualquer mudança relevante em minha saúde antes do início do retiro.</span>
+            </label>
+            <label>
+              <input type="checkbox" name="termoDados" required>
+              <span>Autorizo o uso dos meus dados <strong>exclusivamente para os fins do retiro</strong> (cuidado clínico, articulação pastoral e logística), em conformidade com a LGPD. Meus dados clínicos serão acessíveis apenas à equipe coordenadora e profissionais envolvidos no meu acompanhamento.</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-error" id="formError"></div>
+
+        <div class="submit-area">
+          <button type="submit" class="btn" id="submitBtn">Enviar inscrição</button>
+          <p class="submit-help">Após o envio, você receberá acesso automático à área de participantes.</p>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- CONFIRMAÇÃO -->
+    <div class="confirmation" id="confirmation">
+      <div class="confirmation-icon">✦</div>
+      <h1>Inscrição recebida</h1>
+      <p class="lead">Sua inscrição foi registrada. A coordenação vai revisar os dados e entrar em contato nos próximos dias para os próximos passos.</p>
+
+      <div class="senha-box">
+        <p class="label">Sua senha da área de participantes</p>
+        <p class="senha" id="senhaExibida">ordovitae</p>
+      </div>
+
+      <p style="max-width: 520px; margin: 0 auto 2rem; color: var(--text-muted); font-size: 0.95rem;">
+        Guarde essa senha — ela dá acesso à área comum da sua turma (cronograma, materiais, comunicados). Também enviamos uma cópia para o seu email.
+      </p>
+
+      <a href="membros/painel.html" class="btn" id="entrarBtn">Entrar na área de participantes</a>
+
+      <p style="margin-top: 2.5rem; font-size: 0.9rem;"><a href="index.html">Voltar ao site</a></p>
+    </div>
+
+  </div>
+</section>
+
+</main>
+
+<div class="selo">
+  <strong>Comissão de Saúde Mental</strong>
+  <p style="margin-top: 0.5rem;">Comunidade Católica Shalom</p>
+</div>
+
+<footer>
+  <nav>
+    <ul>
+      <li><a href="index.html">Início</a></li>
+      <li><a href="o-projeto.html">O projeto</a></li>
+      <li><a href="inscricoes.html">Inscrições</a></li>
+      <li><a href="contato.html">Contato</a></li>
+      <li><a href="participantes.html">Participantes</a></li>
+      <li><a href="admin/index.html">Administração</a></li>
+    </ul>
+  </nav>
+  <p>© 2026 Comunidade Católica Shalom · Projeto Ordo Vitae</p>
+</footer>
+
+<script src="config.js"></script>
+<script>
+  // =====================================================
+  // CONFIGURAÇÃO
+  // =====================================================
+  // Tudo vem de /config.js — não editar aqui.
+  const API_URL = window.OV_API_URL || '';
+  const SENHA_TURMA = window.OV_SENHA_TURMA;
+
+  // =====================================================
+  // LISTA DE EXAMES
+  // =====================================================
+  const EXAMES = [
+    'Hemograma completo',
+    'TSH e T4 livre',
+    'Glicemia de jejum',
+    'Perfil lipídico',
+    'Hepatograma',
+    'Ureia e creatinina',
+    'Vitamina B12',
+    'Vitamina D',
+    'Ferritina',
+    'Cortisol'
+  ];
+
+  // Renderiza a lista de exames
+  (function renderExames() {
+    const container = document.getElementById('examesContainer');
+    EXAMES.forEach((exame, i) => {
+      const key = 'exame_' + i;
+      const row = document.createElement('div');
+      row.className = 'exame-row';
+      row.innerHTML = `
+        <div class="exame-nome">${exame}</div>
+        <div class="radio-group">
+          <label><input type="radio" name="${key}_status" value="realizado" required> Realizado</label>
+          <label><input type="radio" name="${key}_status" value="nao"> Não realizei</label>
+        </div>
+        <div class="exame-campo">
+          <span class="mob-label">Data do exame</span>
+          <input type="date" name="${key}_data">
+          <span class="exame-aviso" hidden></span>
+        </div>
+        <div class="exame-campo">
+          <span class="mob-label">Anexar resultado</span>
+          <input type="file" name="${key}_arquivo" accept="image/*,application/pdf">
+        </div>
+      `;
+      container.appendChild(row);
+    });
+  })();
+
+  // =====================================================
+  // ACESSIBILIDADE — associa cada rótulo ao seu campo
+  // =====================================================
+  // Feito por script (e não à mão em cada campo) para não haver risco de
+  // um id novo entrar sem o for correspondente. Vale para leitor de tela
+  // e faz o clique no texto do rótulo focar o campo.
+  (function associarRotulos() {
+    let n = 0;
+    document.querySelectorAll('.field-group, .exame-campo, .conditional').forEach(grupo => {
+      const rotulo = grupo.querySelector(':scope > label, :scope > .mob-label');
+      const campo = grupo.querySelector(':scope > input, :scope > select, :scope > textarea');
+      if (!rotulo || !campo) return;
+      if (!campo.id) campo.id = 'campo-' + (campo.name || ++n);
+      if (rotulo.tagName === 'LABEL') {
+        rotulo.setAttribute('for', campo.id);
+      } else {
+        // .mob-label é <span>: associa por aria-labelledby
+        if (!rotulo.id) rotulo.id = campo.id + '-rot';
+        campo.setAttribute('aria-labelledby', rotulo.id);
+      }
+    });
+
+    // Grupos de radio: o <label> do bloco descreve o conjunto, não um campo
+    document.querySelectorAll('.field-group').forEach(grupo => {
+      const radios = grupo.querySelectorAll('input[type=radio]');
+      if (!radios.length) return;
+      const rotulo = grupo.querySelector(':scope > label');
+      if (!rotulo) return;
+      rotulo.removeAttribute('for');
+      if (!rotulo.id) rotulo.id = 'rot-' + radios[0].name;
+      const fieldset = grupo.querySelector('.radio-group');
+      if (fieldset) {
+        fieldset.setAttribute('role', 'radiogroup');
+        fieldset.setAttribute('aria-labelledby', rotulo.id);
+      }
+    });
+  })();
+
+  // Toggle dos campos condicionais (radios com data-toggle)
+  document.querySelectorAll('input[type=radio][data-toggle]').forEach(radio => {
+    radio.addEventListener('change', e => {
+      const target = document.getElementById(radio.dataset.toggle);
+      if (!target) return;
+      const groupName = radio.name;
+      const checkedVal = document.querySelector(`input[name="${groupName}"]:checked`)?.value;
+      target.classList.toggle('show', checkedVal === 'sim');
+    });
+  });
+  // Também esconde quando o "não" é marcado
+  document.querySelectorAll('input[type=radio]').forEach(radio => {
+    if (radio.value !== 'nao') return;
+    radio.addEventListener('change', () => {
+      const groupName = radio.name;
+      const partner = document.querySelector(`input[name="${groupName}"][data-toggle]`);
+      if (!partner) return;
+      const target = document.getElementById(partner.dataset.toggle);
+      if (target) target.classList.remove('show');
+    });
+  });
+
+  // =====================================================
+  // VALIDADE DOS EXAMES — 6 meses contados até o módulo
+  // =====================================================
+  // A validade é contada a partir da data do retiro, não do dia em que a
+  // pessoa preenche: o exame precisa estar válido QUANDO o módulo acontecer.
+  // Setembro/2026 é o sexto mês, então a janela começa em abril/2026.
+  //
+  // Ao trocar a turma, basta atualizar MODULO_INICIO.
+  const MODULO_INICIO = '2026-09-28';
+  const MESES_VALIDADE = 6;
+
+  // Primeiro dia do mês que abre a janela (contando o mês do módulo como o 6º)
+  const inicioModulo = new Date(MODULO_INICIO + 'T00:00:00');
+  const LIMITE = new Date(inicioModulo.getFullYear(), inicioModulo.getMonth() - (MESES_VALIDADE - 1), 1);
+
+  const MESES_NOME = ['janeiro','fevereiro','março','abril','maio','junho',
+                      'julho','agosto','setembro','outubro','novembro','dezembro'];
+  const LIMITE_TEXTO = `${MESES_NOME[LIMITE.getMonth()]} de ${LIMITE.getFullYear()}`;
+
+  function conferirValidadeExame(campoData) {
+    const aviso = campoData.parentElement.querySelector('.exame-aviso');
+    if (!aviso) return;
+    if (!campoData.value) { aviso.hidden = true; return; }
+
+    const dataExame = new Date(campoData.value + 'T00:00:00');
+    const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+
+    if (dataExame > hoje) {
+      aviso.textContent = 'Data no futuro — confira se digitou certo.';
+      aviso.className = 'exame-aviso erro';
+    } else if (dataExame < LIMITE) {
+      aviso.textContent = `Estará vencido no retiro. Refaça a partir de ${LIMITE_TEXTO}.`;
+      aviso.className = 'exame-aviso alerta';
+    } else {
+      aviso.textContent = 'Válido para o retiro.';
+      aviso.className = 'exame-aviso ok';
+    }
+    aviso.hidden = false;
+  }
+
+  // Deixa a regra explícita no texto da seção, em vez de só avisar depois
+  (function explicarValidade() {
+    const alvo = document.getElementById('ovValidadeExames');
+    if (alvo) alvo.textContent = LIMITE_TEXTO;
+  })();
+
+  document.querySelectorAll('.exame-row input[type=date]').forEach(campo => {
+    campo.addEventListener('change', () => conferirValidadeExame(campo));
+    campo.addEventListener('blur', () => conferirValidadeExame(campo));
+  });
+
+  // Autosave em localStorage — o usuário pode retomar depois
+  const AUTOSAVE_KEY = 'ov_inscricao_rascunho';
+  const form = document.getElementById('inscricaoForm');
+
+  function saveRascunho() {
+    const data = {};
+    new FormData(form).forEach((v, k) => {
+      if (v instanceof File) return; // não salva arquivos no localStorage
+      data[k] = v;
+    });
+    try {
+      localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(data));
+      mostrarRascunhoSalvo();
+    } catch {}
+  }
+
+  // Avisa que o rascunho foi guardado — num formulário longo, a pessoa
+  // precisa saber que pode fechar e voltar sem perder o preenchimento.
+  let timerRascunho;
+  function mostrarRascunhoSalvo() {
+    const el = document.getElementById('avisoRascunho');
+    if (!el) return;
+    el.classList.add('visivel');
+    clearTimeout(timerRascunho);
+    timerRascunho = setTimeout(() => el.classList.remove('visivel'), 2200);
+  }
+  function loadRascunho() {
+    try {
+      const data = JSON.parse(localStorage.getItem(AUTOSAVE_KEY) || 'null');
+      if (!data) return;
+      Object.entries(data).forEach(([k, v]) => {
+        const els = form.querySelectorAll(`[name="${k}"]`);
+        els.forEach(el => {
+          if (el.type === 'radio' || el.type === 'checkbox') {
+            if (el.value === v || (el.type === 'checkbox' && v === 'on')) el.checked = true;
+          } else if (el.type !== 'file') {
+            el.value = v;
+          }
+        });
+      });
+      // Reaplica os condicionais
+      document.querySelectorAll('input[type=radio][data-toggle]:checked').forEach(r => r.dispatchEvent(new Event('change')));
+    } catch {}
+  }
+  loadRascunho();
+  form.addEventListener('input', saveRascunho);
+  form.addEventListener('change', saveRascunho);
+
+  // Converte File em base64 (para envio JSON ao Apps Script)
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve({
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        data: reader.result.split(',')[1] // remove o prefixo data:*/*;base64,
+      });
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function coletarDados() {
+    const fd = new FormData(form);
+    const dados = {};
+    const arquivos = {};
+    for (const [k, v] of fd.entries()) {
+      if (v instanceof File) {
+        if (v.size > 0) arquivos[k] = await fileToBase64(v);
+      } else {
+        dados[k] = v;
+      }
+    }
+    return { dados, arquivos, submittedAt: new Date().toISOString() };
+  }
+
+  // Submit
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    const errBox = document.getElementById('formError');
+    errBox.classList.remove('show');
+
+    if (!form.checkValidity()) {
+      // Leva a pessoa até o primeiro campo pendente e diz em que bloco está —
+      // sem isso, "revise os campos" num formulário de 7 blocos é um labirinto.
+      const primeiro = form.querySelector(':invalid');
+      const bloco = primeiro?.closest('.form-section')?.querySelector('h2')?.textContent;
+      errBox.textContent = bloco
+        ? `Faltam campos obrigatórios no bloco "${bloco}". Levamos você até o primeiro.`
+        : 'Por favor, revise os campos obrigatórios destacados no formulário.';
+      errBox.classList.add('show');
+      if (primeiro) {
+        // Se estiver num condicional fechado, abre antes de rolar
+        primeiro.closest('.conditional')?.classList.add('show');
+        primeiro.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => primeiro.focus({ preventScroll: true }), 350);
+      }
+      form.reportValidity();
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Enviando…';
+
+    try {
+      const payload = await coletarDados();
+
+      if (API_URL) {
+        // Envio ao Apps Script. Usa text/plain para evitar preflight CORS.
+        await fetch(API_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+      } else {
+        console.log('Modo offline — inscrição salva localmente:', payload);
+      }
+
+      // Acesso automático à área de membros
+      sessionStorage.setItem('ov_acesso', 'ok');
+      // Guarda cópia local da inscrição (útil pra debug/backup)
+      try { localStorage.setItem('ov_inscricao_' + Date.now(), JSON.stringify(payload.dados)); } catch {}
+      // Limpa rascunho
+      localStorage.removeItem(AUTOSAVE_KEY);
+
+      // Mostra confirmação
+      document.getElementById('formArea').style.display = 'none';
+      document.getElementById('senhaExibida').textContent = SENHA_TURMA;
+      document.getElementById('confirmation').classList.add('show');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    } catch (err) {
+      console.error(err);
+      errBox.textContent = 'Não foi possível enviar sua inscrição agora. Tente novamente em alguns minutos, ou entre em contato com a coordenação.';
+      errBox.classList.add('show');
+      btn.disabled = false;
+      btn.textContent = 'Enviar inscrição';
+    }
+  });
+</script>
+
+</body>
+</html>

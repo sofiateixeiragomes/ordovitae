@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Administração — Ordo Vitae</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body class="admin">
+
+<!-- ============ LOGIN ============ -->
+<div class="login-wrap" id="telaLogin">
+  <div class="login-card">
+    <div class="marca">
+      Ordo Vitae
+      <small>Comissão de Saúde Mental</small>
+    </div>
+    <h1>Administração</h1>
+    <p>Área da coordenação. Aqui você publica o conteúdo que os participantes veem.</p>
+
+    <form id="formLogin" style="margin-top: 2rem; text-align: left;" autocomplete="off">
+      <div class="campo">
+        <label for="senhaAdmin">Senha de administração</label>
+        <input type="password" id="senhaAdmin" required>
+      </div>
+      <div class="aviso erro" id="erroLogin"></div>
+      <button type="submit" class="btn" style="width: 100%;" id="btnEntrar">Entrar</button>
+    </form>
+
+    <p style="margin-top: 2rem; font-size: 0.85rem; color: var(--text-muted);">
+      <a href="../index.html">← Voltar ao site</a>
+    </p>
+  </div>
+</div>
+
+<!-- ============ PAINEL ============ -->
+<div id="telaPainel" hidden>
+
+  <div class="admin-topo">
+    <div class="marca">
+      Ordo Vitae
+      <small>Administração</small>
+    </div>
+    <div class="acoes">
+      <button type="button" onclick="window.open('../membros/painel.html','_blank')">Ver área de participantes</button>
+      <button type="button" id="btnRecarregar">Recarregar</button>
+      <button type="button" id="btnSair">Sair</button>
+    </div>
+  </div>
+
+  <div class="abas">
+    <button type="button" class="ativa" data-secao="comunicados">Comunicados</button>
+    <button type="button" data-secao="cronograma">Cronograma</button>
+    <button type="button" data-secao="materiais">Materiais por fase</button>
+    <button type="button" data-secao="biblioteca">Biblioteca</button>
+    <button type="button" data-secao="painel">Painel inicial</button>
+  </div>
+
+  <div class="painel-conteudo">
+
+    <div class="aviso info" id="avisoOffline">
+      <strong>Modo offline.</strong> O endereço do backend não está configurado em <code>config.js</code>
+      (<code>window.OV_API_URL</code>). Você pode navegar pelo painel, mas nada será salvo.
+      Veja as instruções no topo de <code>google-apps-script.js</code>.
+    </div>
+
+    <!-- ---------- COMUNICADOS ---------- -->
+    <section class="secao ativa" id="secao-comunicados">
+      <h2>Comunicados</h2>
+      <p class="descricao">Avisos da coordenação. Aparecem no painel e na página de comunicados da área de participantes, do mais recente para o mais antigo.</p>
+
+      <div class="form-card">
+        <h3 id="tituloFormComunicado">Novo comunicado</h3>
+        <form id="formComunicado">
+          <input type="hidden" name="id">
+          <div class="linha">
+            <div class="campo">
+              <label for="com-data">Data</label>
+              <input type="date" id="com-data" name="data" required>
+            </div>
+            <div class="campo">
+              <label for="com-autor">Assinado por</label>
+              <input type="text" id="com-autor" name="autor" placeholder="Ex.: Sofia, coordenação">
+            </div>
+          </div>
+          <div class="campo">
+            <label for="com-titulo">Título</label>
+            <input type="text" id="com-titulo" name="titulo" required>
+          </div>
+          <div class="campo">
+            <label for="com-corpo">Mensagem</label>
+            <textarea id="com-corpo" name="corpo" required></textarea>
+            <span class="ajuda">Pode usar várias linhas. Elas são preservadas na exibição.</span>
+          </div>
+          <div class="campo">
+            <label for="com-publicado">Situação</label>
+            <select id="com-publicado" name="publicado">
+              <option value="sim">Publicado — visível aos participantes</option>
+              <option value="nao">Rascunho — só você vê</option>
+            </select>
+          </div>
+          <div class="form-acoes">
+            <button type="submit" class="btn-sm btn-primario">Salvar comunicado</button>
+            <button type="button" class="btn-sm btn-neutro" data-limpar="formComunicado">Limpar</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="lista" id="listaComunicados"></div>
+    </section>
+
+    <!-- ---------- CRONOGRAMA ---------- -->
+    <section class="secao" id="secao-cronograma">
+      <h2>Cronograma</h2>
+      <p class="descricao">Os quatro módulos, com datas e o que fazer no intervalo até o próximo. O módulo marcado como atual aparece destacado para os participantes.</p>
+
+      <div class="form-card">
+        <h3 id="tituloFormModulo">Novo módulo</h3>
+        <form id="formModulo">
+          <input type="hidden" name="id">
+          <div class="linha">
+            <div class="campo">
+              <label for="mod-numero">Número</label>
+              <select id="mod-numero" name="numero" required>
+                <option value="1">Módulo 1</option>
+                <option value="2">Módulo 2</option>
+                <option value="3">Módulo 3</option>
+                <option value="4">Módulo 4</option>
+              </select>
+            </div>
+            <div class="campo">
+              <label for="mod-datas">Datas</label>
+              <input type="text" id="mod-datas" name="datas" placeholder="28 de setembro a 7 de outubro de 2026">
+              <span class="ajuda">Texto livre. Vazio: aparece "datas a confirmar".</span>
+            </div>
+          </div>
+          <div class="campo">
+            <label for="mod-titulo">Título</label>
+            <input type="text" id="mod-titulo" name="titulo" required placeholder="Cura da história de vida">
+          </div>
+          <div class="campo">
+            <label for="mod-local">Local</label>
+            <input type="text" id="mod-local" name="local" placeholder="Casa de Retiro São João Paulo II">
+          </div>
+          <div class="campo">
+            <label for="mod-descricao">Descrição</label>
+            <textarea id="mod-descricao" name="descricao" style="min-height:90px"></textarea>
+          </div>
+          <div class="campo">
+            <label for="mod-atividades">Atividades até o próximo módulo</label>
+            <textarea id="mod-atividades" name="atividades" style="min-height:90px" placeholder="Uma atividade por linha"></textarea>
+            <span class="ajuda">Uma por linha. Vira uma lista na área de participantes.</span>
+          </div>
+          <div class="linha">
+            <div class="campo">
+              <label for="mod-atual">É o módulo atual?</label>
+              <select id="mod-atual" name="atual">
+                <option value="nao">Não</option>
+                <option value="sim">Sim — destacar este</option>
+              </select>
+              <span class="ajuda">Ao marcar um, os outros são desmarcados automaticamente.</span>
+            </div>
+            <div class="campo">
+              <label for="mod-publicado">Situação</label>
+              <select id="mod-publicado" name="publicado">
+                <option value="sim">Publicado</option>
+                <option value="nao">Rascunho</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-acoes">
+            <button type="submit" class="btn-sm btn-primario">Salvar módulo</button>
+            <button type="button" class="btn-sm btn-neutro" data-limpar="formModulo">Limpar</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="lista" id="listaCronograma"></div>
+    </section>
+
+    <!-- ---------- MATERIAIS ---------- -->
+    <section class="secao" id="secao-materiais">
+      <h2>Materiais por fase</h2>
+      <p class="descricao">Leituras, áudios, vídeos, exercícios e orações de cada fase do caminho. Você pode enviar um arquivo ou apontar para um link (YouTube, Drive, site).</p>
+
+      <div class="form-card">
+        <h3 id="tituloFormMaterial">Novo material</h3>
+        <form id="formMaterial">
+          <input type="hidden" name="id">
+          <div class="linha">
+            <div class="campo">
+              <label for="mat-fase">Fase</label>
+              <select id="mat-fase" name="fase" required>
+                <option value="1">Fase 1 — Cura da história de vida</option>
+                <option value="2">Fase 2 — Fio de Ouro I e II</option>
+                <option value="3">Fase 3 — Fio de Ouro III e IV</option>
+                <option value="4">Fase 4 — Liberdade e maturidade</option>
+              </select>
+            </div>
+            <div class="campo">
+              <label for="mat-tipo">Tipo</label>
+              <select id="mat-tipo" name="tipo" required>
+                <option>Leitura</option>
+                <option>Áudio</option>
+                <option>Vídeo</option>
+                <option>Exercício</option>
+                <option>Oração</option>
+              </select>
+            </div>
+          </div>
+          <div class="campo">
+            <label for="mat-titulo">Título</label>
+            <input type="text" id="mat-titulo" name="titulo" required>
+          </div>
+          <div class="campo">
+            <label for="mat-url">Link</label>
+            <input type="url" id="mat-url" name="url" placeholder="https://…">
+            <span class="ajuda">Deixe vazio se for enviar um arquivo abaixo.</span>
+          </div>
+          <div class="campo">
+            <label for="mat-arquivo">Ou enviar arquivo</label>
+            <input type="file" id="mat-arquivo" name="arquivo">
+            <span class="ajuda">PDF, áudio, imagem. O arquivo vai para o Drive e o link é gerado automaticamente.</span>
+          </div>
+          <div class="campo">
+            <label for="mat-publicado">Situação</label>
+            <select id="mat-publicado" name="publicado">
+              <option value="sim">Publicado</option>
+              <option value="nao">Rascunho</option>
+            </select>
+          </div>
+          <div class="form-acoes">
+            <button type="submit" class="btn-sm btn-primario">Salvar material</button>
+            <button type="button" class="btn-sm btn-neutro" data-limpar="formMaterial">Limpar</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="lista" id="listaMateriais"></div>
+    </section>
+
+    <!-- ---------- BIBLIOTECA ---------- -->
+    <section class="secao" id="secao-biblioteca">
+      <h2>Biblioteca</h2>
+      <p class="descricao">Referências gerais do caminho, organizadas por tema. Diferente dos materiais, não pertencem a uma fase específica.</p>
+
+      <div class="form-card">
+        <h3 id="tituloFormReferencia">Nova referência</h3>
+        <form id="formReferencia">
+          <input type="hidden" name="id">
+          <div class="linha">
+            <div class="campo">
+              <label for="ref-tema">Tema</label>
+              <select id="ref-tema" name="tema" required>
+                <option>Cura interior</option>
+                <option>Perdão</option>
+                <option>Vida espiritual</option>
+                <option>Antropologia cristã</option>
+              </select>
+            </div>
+            <div class="campo">
+              <label for="ref-tipo">Tipo</label>
+              <select id="ref-tipo" name="tipo" required>
+                <option>Livro</option>
+                <option>Artigo</option>
+                <option>Podcast</option>
+                <option>Vídeo</option>
+                <option>Oração</option>
+              </select>
+            </div>
+          </div>
+          <div class="linha">
+            <div class="campo">
+              <label for="ref-titulo">Título</label>
+              <input type="text" id="ref-titulo" name="titulo" required>
+            </div>
+            <div class="campo">
+              <label for="ref-autor">Autor</label>
+              <input type="text" id="ref-autor" name="autor">
+            </div>
+          </div>
+          <div class="campo">
+            <label for="ref-url">Link (opcional)</label>
+            <input type="url" id="ref-url" name="url" placeholder="https://…">
+          </div>
+          <div class="campo">
+            <label for="ref-publicado">Situação</label>
+            <select id="ref-publicado" name="publicado">
+              <option value="sim">Publicado</option>
+              <option value="nao">Rascunho</option>
+            </select>
+          </div>
+          <div class="form-acoes">
+            <button type="submit" class="btn-sm btn-primario">Salvar referência</button>
+            <button type="button" class="btn-sm btn-neutro" data-limpar="formReferencia">Limpar</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="lista" id="listaBiblioteca"></div>
+    </section>
+
+    <!-- ---------- PAINEL ---------- -->
+    <section class="secao" id="secao-painel">
+      <h2>Painel inicial</h2>
+      <p class="descricao">O que os participantes veem ao entrar: a frase do dia, em que fase o caminho está e qual o próximo encontro.</p>
+
+      <div class="form-card">
+        <h3>Conteúdo do painel</h3>
+        <form id="formPainel">
+          <div class="campo">
+            <label for="pai-frase">Frase do dia</label>
+            <textarea id="pai-frase" name="fraseDia" style="min-height:80px"></textarea>
+            <span class="ajuda">Escrituras, santos ou carisma Shalom. Aparece em destaque no topo.</span>
+          </div>
+          <div class="linha">
+            <div class="campo">
+              <label for="pai-fase">Fase atual</label>
+              <input type="text" id="pai-fase" name="faseAtual" placeholder="Fase 1 — Cura da história de vida">
+            </div>
+            <div class="campo">
+              <label for="pai-encontro">Próximo encontro</label>
+              <input type="text" id="pai-encontro" name="proximoEncontro" placeholder="28 set – 7 out 2026">
+            </div>
+          </div>
+          <div class="campo">
+            <label for="pai-desc">Uma frase sobre o momento do caminho</label>
+            <input type="text" id="pai-desc" name="faseDescricao" placeholder="O que está sendo trabalhado nesta fase.">
+          </div>
+          <div class="campo">
+            <label for="pai-local">Local do próximo encontro</label>
+            <input type="text" id="pai-local" name="proximoLocal" placeholder="Casa de Retiro São João Paulo II · Fortaleza">
+          </div>
+          <div class="campo">
+            <label for="pai-plantao">Link do Plantão Psicológico</label>
+            <input type="url" id="pai-plantao" name="linkPlantao" placeholder="https://…">
+            <span class="ajuda">Endereço do site de agendamento. Vazio: o painel avisa que a coordenação informará.</span>
+          </div>
+          <div class="form-acoes">
+            <button type="submit" class="btn-sm btn-primario">Salvar painel</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="../config.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

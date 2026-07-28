@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cronograma — Área de participantes · Ordo Vitae</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="membros.css">
+<script src="../config.js"></script>
+<script src="guard.js"></script>
+<script src="conteudo.js" defer></script>
+</head>
+<body class="membros">
+
+<div class="app">
+
+  <aside class="sidebar">
+    <a href="painel.html" class="brand">
+      Ordo Vitae
+      <small>Área de participantes</small>
+    </a>
+    <div class="turma-tag">Turma A · 2026 a 2028</div>
+    <nav>
+      <ul>
+        <li><a href="painel.html"><span class="nav-icon">⌂</span> Painel inicial</a></li>
+        <li><a href="cronograma.html" class="active"><span class="nav-icon">▦</span> Cronograma</a></li>
+        <li><a href="comunicados.html"><span class="nav-icon">✎</span> Comunicados</a></li>
+        <li><a href="materiais.html"><span class="nav-icon">❖</span> Materiais por fase</a></li>
+        <li><a href="caminhada.html"><span class="nav-icon">✦</span> Sua caminhada</a></li>
+        <li><a href="biblioteca.html"><span class="nav-icon">▤</span> Biblioteca</a></li>
+      </ul>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="../index.html">← Site público</a>
+      <a href="#" onclick="ovSair(); return false;">Sair</a>
+    </div>
+  </aside>
+
+  <main class="content">
+    <h1>Cronograma</h1>
+    <p class="page-sub">Os quatro módulos e as atividades entre eles.</p>
+
+    <p class="placeholder-note" id="ovNotaCronograma">A coordenação preenche as datas e marca o módulo atual à medida que o caminho avança. O módulo em curso aparece destacado.</p>
+
+    <div id="ovCronograma">
+    <div class="modulo-row atual">
+      <span class="tag-atual">Módulo atual</span>
+      <h3>Módulo 1 — Cura da história de vida</h3>
+      <p class="datas">28 de setembro a 7 de outubro de 2026 · Casa de Retiro São João Paulo II</p>
+      <p>Um olhar cuidadoso para trás. Cura da história de vida e cura das gerações. Cada participante redige, no início, a resposta à pergunta "o que está acontecendo comigo?".</p>
+      <div class="intervalo">
+        <strong>Até o próximo módulo</strong>
+        <ul>
+          <li>[Leitura sugerida]</li>
+          <li>[Oração / exercício do intervalo]</li>
+          <li>[Encontro online — data]</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="modulo-row">
+      <h3>Módulo 2 — Fio de Ouro (partes I e II)</h3>
+      <p class="datas">[Datas do módulo] · Casa de Retiro São João Paulo II</p>
+      <p>A pergunta agora é "o que eu sinto hoje". Fio de Ouro nas primeiras duas partes, articulado com o trabalho do perdão.</p>
+      <div class="intervalo">
+        <strong>Até o próximo módulo</strong>
+        <ul>
+          <li>[Leitura sugerida]</li>
+          <li>[Oração / exercício do intervalo]</li>
+          <li>[Encontro online — data]</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="modulo-row">
+      <h3>Módulo 3 — Tecendo o Fio de Ouro (partes III e IV)</h3>
+      <p class="datas">[Datas do módulo] · Casa de Retiro São João Paulo II</p>
+      <p>Aprofundamento do Fio de Ouro, atravessando as áreas do ser — vontade, imaginação, afetividade.</p>
+      <div class="intervalo">
+        <strong>Até o próximo módulo</strong>
+        <ul>
+          <li>[Leitura sugerida]</li>
+          <li>[Oração / exercício do intervalo]</li>
+          <li>[Encontro online — data]</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="modulo-row">
+      <h3>Módulo 4 — Liberdade interior e maturidade humana</h3>
+      <p class="datas">[Datas do módulo] · Casa de Retiro São João Paulo II</p>
+      <p>A colheita. Os dois grandes temas que sintetizam a proposta — com leitura prévia dos livros homônimos.</p>
+      <div class="intervalo">
+        <strong>Preparação prévia</strong>
+        <ul>
+          <li>Leitura do livro <em>Liberdade interior</em></li>
+          <li>Leitura do livro <em>Maturidade humana</em></li>
+        </ul>
+      </div>
+    </div>
+    </div>
+
+  </main>
+
+</div>
+
+</body>
+</html>

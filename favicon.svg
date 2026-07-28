@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Favicon provisório do Ordo Vitae.
+       Substituir pelo símbolo oficial quando a identidade visual for entregue. -->
+  <rect width="64" height="64" rx="10" fill="#2D6457"/>
+  <path d="M32 47c-1 0-1.9-.5-2.4-1.3C25.9 40 18 32.8 18 26.2 18 21.1 21.9 17 26.8 17c2.1 0 4.1.8 5.2 2.3 1.1-1.5 3.1-2.3 5.2-2.3 4.9 0 8.8 4.1 8.8 9.2 0 6.6-7.9 13.8-11.6 19.5-.5.8-1.4 1.3-2.4 1.3z"
+        fill="none" stroke="#F4F1E8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

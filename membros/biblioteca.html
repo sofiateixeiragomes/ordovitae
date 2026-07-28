@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biblioteca — Área de participantes · Ordo Vitae</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="membros.css">
+<script src="../config.js"></script>
+<script src="guard.js"></script>
+<script src="conteudo.js" defer></script>
+</head>
+<body class="membros">
+
+<div class="app">
+
+  <aside class="sidebar">
+    <a href="painel.html" class="brand">
+      Ordo Vitae
+      <small>Área de participantes</small>
+    </a>
+    <div class="turma-tag">Turma A · 2026 a 2028</div>
+    <nav>
+      <ul>
+        <li><a href="painel.html"><span class="nav-icon">⌂</span> Painel inicial</a></li>
+        <li><a href="cronograma.html"><span class="nav-icon">▦</span> Cronograma</a></li>
+        <li><a href="comunicados.html"><span class="nav-icon">✎</span> Comunicados</a></li>
+        <li><a href="materiais.html"><span class="nav-icon">❖</span> Materiais por fase</a></li>
+        <li><a href="caminhada.html"><span class="nav-icon">✦</span> Sua caminhada</a></li>
+        <li><a href="biblioteca.html" class="active"><span class="nav-icon">▤</span> Biblioteca</a></li>
+      </ul>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="../index.html">← Site público</a>
+      <a href="#" onclick="ovSair(); return false;">Sair</a>
+    </div>
+  </aside>
+
+  <main class="content">
+    <h1>Biblioteca</h1>
+    <p class="page-sub">Referências de todo o caminho, organizadas por tema.</p>
+
+    <p class="placeholder-note">Reúne livros, podcasts, vídeos e orações citados nos módulos. A coordenação acrescenta referências ao longo do caminho. Cada item leva uma etiqueta de tipo (Livro, Podcast, Vídeo, Oração, Artigo).</p>
+
+    <div id="ovBiblioteca">
+    <div class="tema-block">
+      <h3>Cura interior</h3>
+      <ul class="ref-list">
+        <li><span class="ref-tipo">Livro</span>[Título] <span class="ref-autor">— [Autor]</span></li>
+        <li><span class="ref-tipo">Vídeo</span>[Título] <span class="ref-autor">— [Autor / canal]</span> · <a href="#">[link]</a></li>
+      </ul>
+    </div>
+
+    <div class="tema-block">
+      <h3>Perdão</h3>
+      <ul class="ref-list">
+        <li><span class="ref-tipo">Livro</span>[Título] <span class="ref-autor">— [Autor]</span></li>
+        <li><span class="ref-tipo">Podcast</span>[Título do episódio] <span class="ref-autor">— [Programa]</span> · <a href="#">[link]</a></li>
+      </ul>
+    </div>
+
+    <div class="tema-block">
+      <h3>Vida espiritual</h3>
+      <ul class="ref-list">
+        <li><span class="ref-tipo">Livro</span><em>Liberdade interior</em> <span class="ref-autor">— leitura prévia do Módulo 4</span></li>
+        <li><span class="ref-tipo">Livro</span><em>Maturidade humana</em> <span class="ref-autor">— leitura prévia do Módulo 4</span></li>
+        <li><span class="ref-tipo">Oração</span>[Título / texto de oração] · <a href="#">[link / arquivo]</a></li>
+      </ul>
+    </div>
+
+    <div class="tema-block">
+      <h3>Antropologia cristã</h3>
+      <ul class="ref-list">
+        <li><span class="ref-tipo">Livro</span>[Título] <span class="ref-autor">— [Autor]</span></li>
+        <li><span class="ref-tipo">Artigo</span>[Título] <span class="ref-autor">— [Autor]</span> · <a href="#">[link]</a></li>
+      </ul>
+    </div>
+    </div>
+
+  </main>
+
+</div>
+
+</body>
+</html>

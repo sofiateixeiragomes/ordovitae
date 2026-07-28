@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel — Área de participantes · Ordo Vitae</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="membros.css">
+<script src="../config.js"></script>
+<script src="guard.js"></script>
+<script src="conteudo.js" defer></script>
+</head>
+<body class="membros">
+
+<div class="app">
+
+  <aside class="sidebar">
+    <a href="painel.html" class="brand">
+      Ordo Vitae
+      <small>Área de participantes</small>
+    </a>
+    <div class="turma-tag">Turma A · 2026 a 2028</div>
+    <nav>
+      <ul>
+        <li><a href="painel.html" class="active"><span class="nav-icon">⌂</span> Painel inicial</a></li>
+        <li><a href="cronograma.html"><span class="nav-icon">▦</span> Cronograma</a></li>
+        <li><a href="comunicados.html"><span class="nav-icon">✎</span> Comunicados</a></li>
+        <li><a href="materiais.html"><span class="nav-icon">❖</span> Materiais por fase</a></li>
+        <li><a href="caminhada.html"><span class="nav-icon">✦</span> Sua caminhada</a></li>
+        <li><a href="biblioteca.html"><span class="nav-icon">▤</span> Biblioteca</a></li>
+      </ul>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="../index.html">← Site público</a>
+      <a href="#" onclick="ovSair(); return false;">Sair</a>
+    </div>
+  </aside>
+
+  <main class="content">
+    <h1>Painel inicial</h1>
+    <p class="page-sub">Bem-vindo de volta ao caminho.</p>
+
+    <p class="frase-dia" id="ovFraseDia">
+      "Não vos lembreis das coisas passadas. Eis que faço uma coisa nova: ela já está surgindo, não a percebeis?"
+    </p>
+
+    <div class="block">
+      <h2>Onde estamos agora</h2>
+      <div class="widget-grid">
+        <div class="widget">
+          <h3>Fase atual</h3>
+          <span class="big" id="ovFaseAtual">Fase 1 — Cura da história de vida</span>
+          <p id="ovFaseDescricao">Um olhar cuidadoso para trás: a cura da história de vida e a cura das gerações.</p>
+        </div>
+        <div class="widget">
+          <h3>Próximo encontro</h3>
+          <span class="big" id="ovProximoEncontro">28 set – 7 out 2026</span>
+          <p id="ovProximoLocal">Casa de Retiro São João Paulo II · Fortaleza</p>
+        </div>
+        <div class="widget">
+          <h3>Seu acompanhamento</h3>
+          <span class="big">Espaço pessoal</span>
+          <p>Dados, contato do acompanhador e registros ficam no seu <a href="caminhada.html">espaço pessoal</a> — fora deste site, por sigilo.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <h2>Sua próxima consulta no Plantão</h2>
+      <div class="access-box" style="margin-top: 0;">
+        <h3>Marque a consulta de triagem no Plantão Psicológico</h3>
+        <p>
+          Antes do primeiro módulo, cada participante passa por uma consulta no <strong>Plantão de Aconselhamento Psicológico</strong> da Comunidade. É onde a equipe conhece você e confirma a indicação — parte prevista do processo.
+        </p>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.75rem;">
+          Sinalize no formulário que você é participante do Ordo Vitae para que a triagem seja direcionada corretamente.
+        </p>
+        <a href="#" target="_blank" rel="noopener" class="btn" style="margin-top: 1rem;"
+           id="ovBotaoPlantao" aria-disabled="true">Agendar consulta no Plantão →</a>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.75rem;" id="ovAvisoPlantao">
+          O endereço de agendamento será informado pela coordenação.
+        </p>
+      </div>
+    </div>
+
+    <div class="block">
+      <h2>Últimos comunicados</h2>
+      <div id="ovUltimosComunicados">
+        <p class="placeholder-note">Os comunicados publicados pela coordenação aparecem aqui.</p>
+      </div>
+      <p style="margin-top:1.5rem;"><a href="comunicados.html">Ver todos os comunicados →</a></p>
+    </div>
+
+    <div class="block">
+      <h2>Links rápidos</h2>
+      <div class="quick-links">
+        <a href="cronograma.html">Cronograma dos módulos</a>
+        <a href="materiais.html">Materiais da fase atual</a>
+        <a href="caminhada.html">Sua caminhada</a>
+        <a href="biblioteca.html">Biblioteca</a>
+        <a href="../contato.html">Falar com a coordenação</a>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+</body>
+</html>

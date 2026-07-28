@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Entrar — Área de participantes · Ordo Vitae</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="membros.css">
+</head>
+<body class="membros">
+
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="logo-block">
+      Ordo Vitae
+      <small>Comunidade Católica Shalom</small>
+    </div>
+    <h1>Área de participantes</h1>
+    <p>O espaço privado da sua turma. Use a senha enviada pela coordenação no seu convite.</p>
+
+    <form class="login-form" id="loginForm" autocomplete="off">
+      <label for="senha">Senha da turma</label>
+      <input type="password" id="senha" class="field" required>
+      <p class="login-error" id="erro">Senha incorreta. Verifique o convite ou fale com a coordenação.</p>
+      <button type="submit" class="btn">Entrar</button>
+    </form>
+
+    <p class="login-note">
+      Ainda não tem acesso, ou perdeu a senha?<br>
+      <a href="../contato.html">Fale com a coordenação</a> &nbsp;·&nbsp; <a href="../index.html">Voltar ao site</a>
+    </p>
+  </div>
+</div>
+
+<script src="../config.js"></script>
+<script src="guard.js"></script>
+<script>
+  (function () {
+    if (sessionStorage.getItem('ov_acesso') === 'ok') {
+      location.replace('painel.html');
+      return;
+    }
+    var form = document.getElementById('loginForm');
+    var erro = document.getElementById('erro');
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var valor = document.getElementById('senha').value.trim();
+      if (valor === window.OV_SENHA_TURMA) {
+        sessionStorage.setItem('ov_acesso', 'ok');
+        location.replace('painel.html');
+      } else {
+        erro.style.display = 'block';
+        document.getElementById('senha').value = '';
+      }
+    });
+  })();
+</script>
+
+</body>
+</html>
