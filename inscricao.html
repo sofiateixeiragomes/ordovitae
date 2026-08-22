@@ -168,6 +168,25 @@
   .exame-aviso.alerta { color: #8A5A2B; font-weight: 500; }
   .exame-aviso.erro { color: #A34432; font-weight: 500; }
 
+  /* Exame ainda não respondido, depois de uma tentativa de envio.
+     Sem isto a página rola até o exame pendente sem nada explicando,
+     porque a mensagem de erro fica lá embaixo, perto do botão. */
+  .exame-row.pendente {
+    background: #FDECE7;
+    border-left: 3px solid #A34432;
+    padding-left: 0.9rem;
+    margin-left: -0.9rem;
+  }
+  .exame-row.pendente .exame-nome { color: #A34432; }
+  .exame-row.pendente .aviso-pendente {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.82rem;
+    color: #A34432;
+    font-weight: 500;
+  }
+  .aviso-pendente { display: none; }
+
   @media (max-width: 700px) {
     .exame-cabeca { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
     .exame-nome { color: var(--accent); }
@@ -736,12 +755,13 @@
       row.className = 'exame-row';
       row.innerHTML = `
         <div class="exame-cabeca">
-          <div class="exame-nome">${exame.nome}</div>
+          <div class="exame-nome">${exame.nome} <span class="required">*</span></div>
           <div class="radio-group">
             <label><input type="radio" name="${key}_status" value="realizado" required> Realizado</label>
             <label><input type="radio" name="${key}_status" value="nao"> Não realizei</label>
           </div>
         </div>
+        <span class="aviso-pendente">Escolha uma das duas opções para continuar.</span>
         <div class="exame-detalhes" hidden>
           <div class="exame-campo">
             <span class="campo-rot">Data do exame</span>
@@ -774,6 +794,7 @@
 
       detalhes.hidden = !realizado;
       data.required = realizado;
+      linha.classList.remove('pendente'); // respondeu, sai do destaque
 
       if (!realizado) {
         // Limpa o que já tinha sido digitado, para não enviar dado órfão
@@ -983,13 +1004,25 @@
     errBox.classList.remove('show');
 
     if (!form.checkValidity()) {
+      // Marca os exames sem resposta. A mensagem de erro fica junto ao botão,
+      // fora da tela depois que a página rola — por isso o aviso precisa
+      // estar também no próprio exame.
+      let examesPendentes = 0;
+      document.querySelectorAll('.exame-row').forEach(linha => {
+        const respondido = linha.querySelector('input[type=radio]:checked');
+        linha.classList.toggle('pendente', !respondido);
+        if (!respondido) examesPendentes++;
+      });
+
       // Leva a pessoa até o primeiro campo pendente e diz em que bloco está —
       // sem isso, "revise os campos" num formulário de 7 blocos é um labirinto.
       const primeiro = form.querySelector(':invalid');
       const bloco = primeiro?.closest('.form-section')?.querySelector('h2')?.textContent;
-      errBox.textContent = bloco
-        ? `Faltam campos obrigatórios no bloco "${bloco}". Levamos você até o primeiro.`
-        : 'Por favor, revise os campos obrigatórios destacados no formulário.';
+      errBox.textContent = examesPendentes
+        ? `Faltam ${examesPendentes} exame${examesPendentes > 1 ? 's' : ''} sem resposta. Marque "Realizado" ou "Não realizei" em cada um — os pendentes estão destacados em vermelho.`
+        : (bloco
+            ? `Faltam campos obrigatórios no bloco "${bloco}". Levamos você até o primeiro.`
+            : 'Por favor, revise os campos obrigatórios destacados no formulário.');
       errBox.classList.add('show');
       if (primeiro) {
         // Se estiver num condicional fechado, abre antes de rolar
