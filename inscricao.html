@@ -105,22 +105,59 @@
   }
   .conditional.show { display: block; }
 
-  /* Exames */
+  /* Exames — cada um é um bloco: nome + situação, e os detalhes
+     só aparecem quando a pessoa marca que realizou. */
   .exame-row {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr 1.5fr auto;
-    gap: 0.75rem;
-    align-items: center;
-    padding: 0.75rem 0;
+    padding: 1rem 0;
     border-bottom: 1px solid var(--line);
   }
   .exame-row:first-child { padding-top: 0; }
-  .exame-row .exame-nome { font-size: 0.95rem; font-weight: 500; }
-  .exame-row .radio-group { gap: 0.75rem; }
-  .exame-row .radio-group label { font-size: 0.88rem; }
-  .exame-row input[type=date],
-  .exame-row input[type=file] { font-size: 0.85rem; padding: 0.4rem; width: 100%; }
+  .exame-cabeca {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .exame-nome { font-size: 1rem; font-weight: 600; }
+  .exame-row .radio-group { gap: 1rem; }
+  .exame-row .radio-group label { font-size: 0.9rem; white-space: nowrap; }
+
+  .exame-detalhes {
+    display: grid;
+    grid-template-columns: minmax(140px, 1fr) minmax(160px, 1.4fr) minmax(140px, 1fr);
+    gap: 1rem;
+    margin-top: 0.9rem;
+    padding: 0.9rem 1rem;
+    background: var(--bg-soft);
+    border-left: 2px solid var(--accent-warm);
+    border-radius: 2px;
+  }
   .exame-campo { min-width: 0; }
+  .campo-rot {
+    display: block;
+    font-size: 0.72rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+  .exame-detalhes input[type=date],
+  .exame-detalhes input[type=text],
+  .exame-detalhes input[type=file] {
+    width: 100%;
+    font-size: 0.88rem;
+    padding: 0.45rem 0.6rem;
+    font-family: var(--sans);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    color: var(--text);
+  }
+  .exame-detalhes input:focus { outline: none; border-color: var(--accent); }
+  .exame-detalhes input[type=file] { border: none; padding-left: 0; }
+
   .exame-aviso {
     display: block;
     margin-top: 0.3rem;
@@ -130,42 +167,11 @@
   .exame-aviso.ok { color: var(--accent); }
   .exame-aviso.alerta { color: #8A5A2B; font-weight: 500; }
   .exame-aviso.erro { color: #A34432; font-weight: 500; }
-  /* Rótulos que só aparecem no celular, onde o cabeçalho da tabela some */
-  .mob-label { display: none; }
-  .exame-header {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr 1.5fr auto;
-    gap: 0.75rem;
-    padding: 0 0 0.5rem;
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    font-weight: 600;
-    border-bottom: 2px solid var(--accent);
-    margin-bottom: 0.25rem;
-  }
+
   @media (max-width: 700px) {
-    .exame-header { display: none; }
-    .exame-row {
-      grid-template-columns: 1fr;
-      gap: 0.5rem;
-      padding: 1.25rem 0;
-    }
-    .exame-row .exame-nome {
-      font-size: 1.02rem;
-      font-weight: 600;
-      color: var(--accent);
-    }
-    .mob-label {
-      display: block;
-      font-size: 0.75rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      font-weight: 600;
-      margin-bottom: 0.25rem;
-    }
+    .exame-cabeca { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+    .exame-nome { color: var(--accent); }
+    .exame-detalhes { grid-template-columns: 1fr; gap: 0.85rem; }
   }
 
   /* Termos */
@@ -573,15 +579,11 @@
           <p class="section-num">Bloco 5</p>
           <h2>Triagem laboratorial</h2>
           <p class="section-intro">
-            Os exames precisam estar válidos <strong>na data do retiro</strong> — ou seja, realizados a partir de <strong id="ovValidadeExames">abril de 2026</strong>. Para cada um, informe se já realizou (com a data) ou marque "Não realizei" — nesse caso, a coordenação enviará o pedido para você.
+            Os exames precisam estar válidos <strong>na data do retiro</strong> — ou seja, realizados a partir de <strong id="ovValidadeExames">abril de 2026</strong>.
           </p>
-
-          <div class="exame-header">
-            <div>Exame</div>
-            <div>Situação</div>
-            <div>Data (se realizado)</div>
-            <div>Anexo</div>
-          </div>
+          <p class="section-intro" style="margin-top:-1.25rem">
+            <strong>Responda todos</strong>, mesmo que seja para marcar "Não realizei" — nesse caso a coordenação envia o pedido para você. Se já fez, basta digitar o resultado; anexar o laudo é opcional.
+          </p>
 
           <div id="examesContainer"></div>
         </div>
@@ -705,17 +707,24 @@
   // =====================================================
   // LISTA DE EXAMES
   // =====================================================
+  // O exemplo em cada exame mostra o formato esperado do resultado —
+  // evita que a pessoa fique em dúvida sobre o que digitar.
   const EXAMES = [
-    'Hemograma completo',
-    'TSH e T4 livre',
-    'Glicemia de jejum',
-    'Perfil lipídico',
-    'Hepatograma',
-    'Ureia e creatinina',
-    'Vitamina B12',
-    'Vitamina D',
-    'Ferritina',
-    'Cortisol'
+    { nome: 'Hemograma completo',            exemplo: 'Ex.: Hb 13,5 · Leuco 6.800 · Plaq 250.000' },
+    { nome: 'Glicemia de jejum',             exemplo: 'Ex.: 76 mg/dL' },
+    { nome: 'TSH',                           exemplo: 'Ex.: 2,1 µUI/mL' },
+    { nome: 'T4 livre',                      exemplo: 'Ex.: 1,2 ng/dL' },
+    { nome: 'Perfil lipídico',               exemplo: 'Ex.: CT 180 · HDL 55 · LDL 105 · TG 90' },
+    { nome: 'TGO (AST)',                     exemplo: 'Ex.: 22 U/L' },
+    { nome: 'TGP (ALT)',                     exemplo: 'Ex.: 25 U/L' },
+    { nome: 'Gama-GT',                       exemplo: 'Ex.: 30 U/L' },
+    { nome: 'Fosfatase alcalina',            exemplo: 'Ex.: 70 U/L' },
+    { nome: 'Bilirrubinas (total e frações)', exemplo: 'Ex.: BT 0,8 · BD 0,2' },
+    { nome: 'Ureia e creatinina',            exemplo: 'Ex.: Ureia 30 · Creatinina 0,9' },
+    { nome: 'Vitamina B12',                  exemplo: 'Ex.: 420 pg/mL' },
+    { nome: 'Vitamina D',                    exemplo: 'Ex.: 32 ng/mL' },
+    { nome: 'Ferritina',                     exemplo: 'Ex.: 85 ng/mL' },
+    { nome: 'Cortisol',                      exemplo: 'Ex.: 12 µg/dL (manhã)' }
   ];
 
   // Renderiza a lista de exames
@@ -726,24 +735,54 @@
       const row = document.createElement('div');
       row.className = 'exame-row';
       row.innerHTML = `
-        <div class="exame-nome">${exame}</div>
-        <div class="radio-group">
-          <label><input type="radio" name="${key}_status" value="realizado" required> Realizado</label>
-          <label><input type="radio" name="${key}_status" value="nao"> Não realizei</label>
+        <div class="exame-cabeca">
+          <div class="exame-nome">${exame.nome}</div>
+          <div class="radio-group">
+            <label><input type="radio" name="${key}_status" value="realizado" required> Realizado</label>
+            <label><input type="radio" name="${key}_status" value="nao"> Não realizei</label>
+          </div>
         </div>
-        <div class="exame-campo">
-          <span class="mob-label">Data do exame</span>
-          <input type="date" name="${key}_data">
-          <span class="exame-aviso" hidden></span>
-        </div>
-        <div class="exame-campo">
-          <span class="mob-label">Anexar resultado</span>
-          <input type="file" name="${key}_arquivo" accept="image/*,application/pdf">
+        <div class="exame-detalhes" hidden>
+          <div class="exame-campo">
+            <span class="campo-rot">Data do exame</span>
+            <input type="date" name="${key}_data">
+            <span class="exame-aviso" hidden></span>
+          </div>
+          <div class="exame-campo">
+            <span class="campo-rot">Resultado</span>
+            <input type="text" name="${key}_valor" placeholder="${exame.exemplo}">
+          </div>
+          <div class="exame-campo">
+            <span class="campo-rot">Laudo (opcional)</span>
+            <input type="file" name="${key}_arquivo" accept="image/*,application/pdf">
+          </div>
         </div>
       `;
       container.appendChild(row);
     });
   })();
+
+  // Mostra os detalhes só quando a pessoa marca "Realizado".
+  // Ao marcar, a data passa a ser obrigatória — sem ela não dá para
+  // saber se o exame ainda estará válido no retiro.
+  document.querySelectorAll('.exame-row input[type=radio]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      const linha = radio.closest('.exame-row');
+      const detalhes = linha.querySelector('.exame-detalhes');
+      const data = detalhes.querySelector('input[type=date]');
+      const realizado = radio.value === 'realizado';
+
+      detalhes.hidden = !realizado;
+      data.required = realizado;
+
+      if (!realizado) {
+        // Limpa o que já tinha sido digitado, para não enviar dado órfão
+        detalhes.querySelectorAll('input').forEach(c => { c.value = ''; });
+        const aviso = detalhes.querySelector('.exame-aviso');
+        if (aviso) aviso.hidden = true;
+      }
+    });
+  });
 
   // =====================================================
   // ACESSIBILIDADE — associa cada rótulo ao seu campo
@@ -754,7 +793,7 @@
   (function associarRotulos() {
     let n = 0;
     document.querySelectorAll('.field-group, .exame-campo, .conditional').forEach(grupo => {
-      const rotulo = grupo.querySelector(':scope > label, :scope > .mob-label');
+      const rotulo = grupo.querySelector(':scope > label, :scope > .campo-rot');
       const campo = grupo.querySelector(':scope > input, :scope > select, :scope > textarea');
       if (!rotulo || !campo) return;
       if (!campo.id) campo.id = 'campo-' + (campo.name || ++n);
@@ -896,8 +935,11 @@
           }
         });
       });
-      // Reaplica os condicionais
+      // Reaplica os condicionais e reabre os detalhes dos exames já respondidos
       document.querySelectorAll('input[type=radio][data-toggle]:checked').forEach(r => r.dispatchEvent(new Event('change')));
+      document.querySelectorAll('.exame-row input[type=radio]:checked').forEach(r => r.dispatchEvent(new Event('change')));
+      // A data volta do rascunho, mas o aviso de validade precisa ser recalculado
+      document.querySelectorAll('.exame-row input[type=date]').forEach(c => { if (c.value) conferirValidadeExame(c); });
     } catch {}
   }
   loadRascunho();
