@@ -105,10 +105,13 @@
       const atual = String(m.atual).toLowerCase() === 'sim';
       const atividades = String(m.atividades || '')
         .split('\n').map(l => l.trim()).filter(Boolean);
+      // Módulo sem título ainda não foi divulgado: mostra só o número,
+      // sem o travessão solto que sobraria de um nome vazio.
+      const titulo = String(m.titulo || '').trim();
       return `
         <div class="modulo-row${atual ? ' atual' : ''}">
           ${atual ? '<span class="tag-atual">Módulo atual</span>' : ''}
-          <h3>Módulo ${esc(m.numero)} — ${esc(m.titulo)}</h3>
+          <h3>Módulo ${esc(m.numero)}${titulo ? ' — ' + esc(titulo) : ''}</h3>
           <p class="datas">${esc(m.datas || 'Datas a confirmar')}${m.local ? ' · ' + esc(m.local) : ''}</p>
           ${m.descricao ? `<p>${esc(m.descricao)}</p>` : ''}
           ${atividades.length ? `

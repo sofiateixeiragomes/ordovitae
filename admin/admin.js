@@ -204,7 +204,7 @@ function desenharCronograma() {
     <div class="item${marcaRascunho(m)}">
       <div class="info">
         <p class="meta">Módulo ${esc(m.numero)}${ehAtual ? ' · ATUAL' : ''}${String(m.publicado).toLowerCase() === 'nao' ? ' · rascunho' : ''}</p>
-        <h4>${esc(m.titulo)}</h4>
+        <h4>${m.titulo ? esc(m.titulo) : '<em style="color:var(--text-muted);font-weight:400">sem título — não divulgado</em>'}</h4>
         <p>${esc(m.datas || 'Datas a confirmar')}${nAtiv ? ` · ${nAtiv} atividade${nAtiv > 1 ? 's' : ''} no intervalo` : ''}</p>
       </div>
       <div class="botoes">
