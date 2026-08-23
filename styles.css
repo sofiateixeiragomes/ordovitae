@@ -363,22 +363,30 @@ section.tight { padding: 3.5rem 2rem; }
   color: var(--bg);
   border-top: none;
 }
-.selo p {
-  font-family: var(--serif);
-  font-style: italic;
-  color: rgba(244, 241, 232, 0.78);
-  font-size: 1.05rem;
-  margin-bottom: 0.5rem;
+/* Hierarquia de papel timbrado: a comissão nomeia a origem em letra
+   miúda, e a Comunidade — a instituição — vem em destaque abaixo. */
+.selo-comissao {
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(244, 241, 232, 0.7);
+  margin-bottom: 0.85rem;
 }
-.selo strong {
-  display: block;
-  font-style: normal;
+.selo-instituicao {
+  font-family: var(--serif);
+  font-size: 2rem;
+  line-height: 1.15;
   color: var(--bg);
-  font-size: 1.15rem;
-  margin-top: 0.5rem;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
+  margin-bottom: 0;
 }
 .selo em { color: rgba(244, 241, 232, 0.85); }
+
+@media (max-width: 700px) {
+  .selo-instituicao { font-size: 1.6rem; }
+  .selo-comissao { font-size: 0.68rem; letter-spacing: 0.14em; }
+}
 
 /* Footer */
 footer {
