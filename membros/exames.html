@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enviar exames — Área de participantes · Ordo Vitae</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="membros.css">
+<script src="../config.js"></script>
+<script src="guard.js"></script>
+<style>
+  .envio-form { max-width: 620px; }
+  .envio-form .campo { margin-bottom: 1.4rem; }
+  .envio-form label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+  }
+  .envio-form input[type=text],
+  .envio-form input[type=email],
+  .envio-form input[type=date],
+  .envio-form select,
+  .envio-form input[type=file] {
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    font-family: var(--sans);
+    font-size: 0.97rem;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    color: var(--text);
+  }
+  .envio-form input:focus, .envio-form select:focus { outline: none; border-color: var(--accent); }
+  .envio-form .ajuda { display: block; margin-top: 0.3rem; font-size: 0.82rem; color: var(--text-muted); }
+  .envio-form .required { color: #A34432; }
+  .dupla { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 700px) { .dupla { grid-template-columns: 1fr; } }
+
+  .msg { padding: 0.9rem 1.2rem; border-radius: 2px; margin: 1.25rem 0; font-size: 0.93rem; display: none; }
+  .msg.visivel { display: block; }
+  .msg.ok { background: var(--bg-soft); color: #1F4A38; border-left: 3px solid var(--accent); }
+  .msg.erro { background: #FDECE7; color: #A34432; border-left: 3px solid #A34432; }
+
+  .enviados { margin-top: 2.5rem; }
+  .enviados h3 { font-size: 1.2rem; margin-bottom: 0.75rem; }
+  .enviados ul { list-style: none; }
+  .enviados li {
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.92rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .enviados .quando { color: var(--text-muted); font-size: 0.85rem; white-space: nowrap; }
+</style>
+</head>
+<body class="membros">
+
+<div class="app">
+
+  <aside class="sidebar">
+    <a href="painel.html" class="brand">
+      Ordo Vitae
+      <small>Área de participantes</small>
+    </a>
+    <div class="turma-tag">Turma A · 2026 a 2028</div>
+    <nav>
+      <ul>
+        <li><a href="painel.html"><span class="nav-icon">⌂</span> Painel inicial</a></li>
+        <li><a href="cronograma.html"><span class="nav-icon">▦</span> Cronograma</a></li>
+        <li><a href="comunicados.html"><span class="nav-icon">✎</span> Comunicados</a></li>
+        <li><a href="materiais.html"><span class="nav-icon">❖</span> Materiais por fase</a></li>
+        <li><a href="exames.html" class="active"><span class="nav-icon">✚</span> Enviar exames</a></li>
+        <li><a href="caminhada.html"><span class="nav-icon">✦</span> Sua caminhada</a></li>
+        <li><a href="biblioteca.html"><span class="nav-icon">▤</span> Biblioteca</a></li>
+      </ul>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="../index.html">← Site público</a>
+      <a href="#" onclick="ovSair(); return false;">Sair</a>
+    </div>
+  </aside>
+
+  <main class="content">
+    <h1>Enviar exames</h1>
+    <p class="page-sub">Para completar o que ficou pendente na inscrição.</p>
+
+    <p>
+      Se na inscrição você marcou algum exame como "não realizei", ou se preferiu enviar o
+      laudo depois, é aqui. Pode enviar um por vez, no seu ritmo — não há prazo além da
+      data do retiro.
+    </p>
+
+    <div class="msg erro" id="msgOffline">
+      O envio está temporariamente indisponível. Escreva para a coordenação e ela orienta você.
+    </div>
+
+    <form class="envio-form" id="formExame" autocomplete="off">
+      <div class="campo">
+        <label for="ex-email">Seu email <span class="required">*</span></label>
+        <input type="email" id="ex-email" name="email" required>
+        <span class="ajuda">Use o mesmo email da inscrição, para que a coordenação junte tudo no seu cadastro.</span>
+      </div>
+
+      <div class="campo">
+        <label for="ex-nome">Seu nome completo <span class="required">*</span></label>
+        <input type="text" id="ex-nome" name="nome" required>
+      </div>
+
+      <div class="campo">
+        <label for="ex-exame">Qual exame <span class="required">*</span></label>
+        <select id="ex-exame" name="exame" required>
+          <option value="">Selecione…</option>
+        </select>
+      </div>
+
+      <div class="dupla">
+        <div class="campo">
+          <label for="ex-data">Data do exame <span class="required">*</span></label>
+          <input type="date" id="ex-data" name="data" required>
+          <span class="exame-aviso ajuda" id="ex-aviso" hidden></span>
+        </div>
+        <div class="campo">
+          <label for="ex-valor">Resultado</label>
+          <input type="text" id="ex-valor" name="valor" placeholder="Ex.: 76 mg/dL">
+          <span class="ajuda">Digite o valor, se souber.</span>
+        </div>
+      </div>
+
+      <div class="campo">
+        <label for="ex-arquivo">Laudo</label>
+        <input type="file" id="ex-arquivo" name="arquivo" accept="image/*,application/pdf">
+        <span class="ajuda">Foto ou PDF. Envie o resultado digitado, o laudo, ou os dois.</span>
+      </div>
+
+      <div class="msg" id="msgRetorno"></div>
+
+      <button type="submit" class="btn" id="btnEnviar">Enviar exame</button>
+    </form>
+
+    <div class="enviados" id="blocoEnviados" hidden>
+      <h3>Enviados nesta sessão</h3>
+      <ul id="listaEnviados"></ul>
+    </div>
+  </main>
+
+</div>
+
+<script>
+  const API = window.OV_API_URL || '';
+
+  // Mesma lista e mesma regra de validade do formulário de inscrição
+  const EXAMES = [
+    ['Hemograma completo', 'Ex.: Hb 13,5 · Leuco 6.800 · Plaq 250.000'],
+    ['Glicemia de jejum', 'Ex.: 76 mg/dL'],
+    ['TSH', 'Ex.: 2,1 µUI/mL'],
+    ['T4 livre', 'Ex.: 1,2 ng/dL'],
+    ['Perfil lipídico', 'Ex.: CT 180 · HDL 55 · LDL 105 · TG 90'],
+    ['TGO (AST)', 'Ex.: 22 U/L'],
+    ['TGP (ALT)', 'Ex.: 25 U/L'],
+    ['Gama-GT', 'Ex.: 30 U/L'],
+    ['Fosfatase alcalina', 'Ex.: 70 U/L'],
+    ['Bilirrubinas (total e frações)', 'Ex.: BT 0,8 · BD 0,2'],
+    ['Ureia e creatinina', 'Ex.: Ureia 30 · Creatinina 0,9'],
+    ['Vitamina B12', 'Ex.: 420 pg/mL'],
+    ['Vitamina D', 'Ex.: 32 ng/mL'],
+    ['Ferritina', 'Ex.: 85 ng/mL'],
+    ['Cortisol', 'Ex.: 12 µg/dL (manhã)']
+  ];
+
+  const MODULO_INICIO = '2026-09-28';
+  const MESES_VALIDADE = 6;
+  const inicio = new Date(MODULO_INICIO + 'T00:00:00');
+  const LIMITE = new Date(inicio.getFullYear(), inicio.getMonth() - (MESES_VALIDADE - 1), 1);
+  const MESES_NOME = ['janeiro','fevereiro','março','abril','maio','junho',
+                      'julho','agosto','setembro','outubro','novembro','dezembro'];
+  const LIMITE_TEXTO = `${MESES_NOME[LIMITE.getMonth()]} de ${LIMITE.getFullYear()}`;
+
+  const sel = document.getElementById('ex-exame');
+  EXAMES.forEach(([nome]) => {
+    const o = document.createElement('option');
+    o.textContent = nome;
+    sel.appendChild(o);
+  });
+
+  // Ao escolher o exame, o exemplo de resultado acompanha
+  sel.addEventListener('change', () => {
+    const achado = EXAMES.find(e => e[0] === sel.value);
+    document.getElementById('ex-valor').placeholder = achado ? achado[1] : 'Ex.: 76 mg/dL';
+  });
+
+  // Mesma checagem de validade do formulário de inscrição
+  const campoData = document.getElementById('ex-data');
+  const aviso = document.getElementById('ex-aviso');
+  campoData.addEventListener('change', () => {
+    if (!campoData.value) { aviso.hidden = true; return; }
+    const d = new Date(campoData.value + 'T00:00:00');
+    const hoje = new Date(); hoje.setHours(0,0,0,0);
+    if (d > hoje) {
+      aviso.textContent = 'Data no futuro — confira se digitou certo.';
+      aviso.className = 'exame-aviso ajuda erro';
+    } else if (d < LIMITE) {
+      aviso.textContent = `Estará vencido no retiro. Refaça a partir de ${LIMITE_TEXTO}.`;
+      aviso.className = 'exame-aviso ajuda alerta';
+    } else {
+      aviso.textContent = 'Válido para o retiro.';
+      aviso.className = 'exame-aviso ajuda ok';
+    }
+    aviso.hidden = false;
+  });
+
+  // Guarda email e nome, para não redigitar a cada envio
+  const CHAVE = 'ov_exames_identificacao';
+  (function recuperar() {
+    try {
+      const d = JSON.parse(localStorage.getItem(CHAVE) || 'null');
+      if (!d) return;
+      document.getElementById('ex-email').value = d.email || '';
+      document.getElementById('ex-nome').value = d.nome || '';
+    } catch {}
+  })();
+
+  function arquivoParaBase64(file) {
+    return new Promise((ok, falha) => {
+      const l = new FileReader();
+      l.onload = () => ok({ name: file.name, type: file.type, size: file.size, data: l.result.split(',')[1] });
+      l.onerror = falha;
+      l.readAsDataURL(file);
+    });
+  }
+
+  if (!API) document.getElementById('msgOffline').classList.add('visivel');
+
+  document.getElementById('formExame').addEventListener('submit', async e => {
+    e.preventDefault();
+    const form = e.target;
+    const btn = document.getElementById('btnEnviar');
+    const msg = document.getElementById('msgRetorno');
+    msg.classList.remove('visivel', 'ok', 'erro');
+
+    const arquivoCampo = document.getElementById('ex-arquivo');
+    const valor = document.getElementById('ex-valor').value.trim();
+    if (!valor && !arquivoCampo.files.length) {
+      msg.textContent = 'Informe o resultado ou anexe o laudo — pelo menos um dos dois.';
+      msg.classList.add('visivel', 'erro');
+      return;
+    }
+    if (!API) {
+      msg.textContent = 'O envio está indisponível no momento. Fale com a coordenação.';
+      msg.classList.add('visivel', 'erro');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Enviando…';
+    try {
+      const dados = {
+        email: document.getElementById('ex-email').value.trim(),
+        nome:  document.getElementById('ex-nome').value.trim(),
+        exame: sel.value,
+        data:  campoData.value,
+        valor
+      };
+      let arquivo = null;
+      if (arquivoCampo.files[0]) arquivo = await arquivoParaBase64(arquivoCampo.files[0]);
+
+      await fetch(API, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ acao: 'exame', dados, arquivo })
+      });
+
+      try { localStorage.setItem(CHAVE, JSON.stringify({ email: dados.email, nome: dados.nome })); } catch {}
+
+      msg.textContent = `${dados.exame} enviado. Pode enviar outro, se ainda faltar algum.`;
+      msg.classList.add('visivel', 'ok');
+
+      const bloco = document.getElementById('blocoEnviados');
+      const li = document.createElement('li');
+      li.innerHTML = `<span>${dados.exame}</span><span class="quando">agora</span>`;
+      document.getElementById('listaEnviados').prepend(li);
+      bloco.hidden = false;
+
+      // Limpa só os campos do exame — email e nome ficam para o próximo
+      sel.value = ''; campoData.value = '';
+      document.getElementById('ex-valor').value = '';
+      arquivoCampo.value = '';
+      aviso.hidden = true;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+      msg.textContent = 'Não foi possível enviar agora. Tente de novo em alguns minutos, ou fale com a coordenação.';
+      msg.classList.add('visivel', 'erro');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Enviar exame';
+    }
+  });
+</script>
+
+</body>
+</html>

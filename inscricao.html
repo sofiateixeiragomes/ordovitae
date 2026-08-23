@@ -612,7 +612,7 @@
           <p class="section-num">Bloco 6</p>
           <h2>Diálogo sobre pagamento</h2>
           <p class="section-intro">
-            O valor da participação ainda está em definição. Este bloco não bloqueia a inscrição — mas precisamos saber se você já conversou com sua autoridade sobre o custo.
+            O valor da participação ainda está em definição. Não ter o pagamento resolvido não impede a inscrição — precisamos apenas saber em que ponto está o diálogo.
           </p>
 
           <div class="field-group">
@@ -628,9 +628,28 @@
           </div>
 
           <div class="field-group">
-            <label>Anexar comprovante de pagamento (opcional)</label>
-            <input type="file" name="comprovante" accept="image/*,application/pdf">
-            <span class="field-hint">Se já houve pagamento parcial ou integral. Aceita PDF ou imagem. Não obrigatório.</span>
+            <label>Houve diálogo com a Assistência de Formação sobre a forma de pagamento? <span class="required">*</span></label>
+            <div class="radio-group">
+              <label><input type="radio" name="dialogoAssistencia" value="sim" data-toggle="assistenciaDet" required> Sim</label>
+              <label><input type="radio" name="dialogoAssistencia" value="nao" required> Não</label>
+            </div>
+            <div class="conditional" id="assistenciaDet">
+              <label>Qual será a forma? <span class="required">*</span></label>
+              <textarea name="assistenciaForma" data-obrigatorio-se-sim placeholder="Descreva o que foi combinado com a Assistência de Formação."></textarea>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label>Já houve algum pagamento? <span class="required">*</span></label>
+            <div class="radio-group">
+              <label><input type="radio" name="houvePagamento" value="sim" data-toggle="comprovanteDet" required> Sim, parcial ou integral</label>
+              <label><input type="radio" name="houvePagamento" value="nao" required> Ainda não</label>
+            </div>
+            <div class="conditional" id="comprovanteDet">
+              <label>Anexar comprovante <span class="required">*</span></label>
+              <input type="file" name="comprovante" accept="image/*,application/pdf" data-obrigatorio-se-sim>
+              <span class="field-hint">Aceita PDF ou imagem. Obrigatório quando já houve pagamento.</span>
+            </div>
           </div>
         </div>
 
@@ -843,6 +862,15 @@
     });
   })();
 
+  // Campos que só passam a ser obrigatórios quando o bloco condicional abre.
+  // Marcados no HTML com data-obrigatorio-se-sim.
+  function ajustarObrigatorios(bloco, aberto) {
+    bloco.querySelectorAll('[data-obrigatorio-se-sim]').forEach(campo => {
+      campo.required = aberto;
+      if (!aberto) campo.value = '';
+    });
+  }
+
   // Toggle dos campos condicionais (radios com data-toggle)
   document.querySelectorAll('input[type=radio][data-toggle]').forEach(radio => {
     radio.addEventListener('change', e => {
@@ -850,7 +878,9 @@
       if (!target) return;
       const groupName = radio.name;
       const checkedVal = document.querySelector(`input[name="${groupName}"]:checked`)?.value;
-      target.classList.toggle('show', checkedVal === 'sim');
+      const aberto = checkedVal === 'sim';
+      target.classList.toggle('show', aberto);
+      ajustarObrigatorios(target, aberto);
     });
   });
   // Também esconde quando o "não" é marcado
@@ -861,7 +891,7 @@
       const partner = document.querySelector(`input[name="${groupName}"][data-toggle]`);
       if (!partner) return;
       const target = document.getElementById(partner.dataset.toggle);
-      if (target) target.classList.remove('show');
+      if (target) { target.classList.remove('show'); ajustarObrigatorios(target, false); }
     });
   });
 
