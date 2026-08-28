@@ -791,9 +791,6 @@
     { nome: 'Perfil lipídico',               exemplo: 'Ex.: CT 180 · HDL 55 · LDL 105 · TG 90' },
     { nome: 'TGO (AST)',                     exemplo: 'Ex.: 22 U/L' },
     { nome: 'TGP (ALT)',                     exemplo: 'Ex.: 25 U/L' },
-    { nome: 'Gama-GT',                       exemplo: 'Ex.: 30 U/L' },
-    { nome: 'Fosfatase alcalina',            exemplo: 'Ex.: 70 U/L' },
-    { nome: 'Bilirrubinas (total e frações)', exemplo: 'Ex.: BT 0,8 · BD 0,2' },
     { nome: 'Ureia e creatinina',            exemplo: 'Ex.: Ureia 30 · Creatinina 0,9' },
     { nome: 'Vitamina B12',                  exemplo: 'Ex.: 420 pg/mL' },
     { nome: 'Vitamina D',                    exemplo: 'Ex.: 32 ng/mL' },
@@ -809,6 +806,7 @@
       const row = document.createElement('div');
       row.className = 'exame-row';
       row.innerHTML = `
+        <input type="hidden" name="${key}_nome" value="${exame.nome}">
         <div class="exame-cabeca">
           <div class="exame-nome">${exame.nome} <span class="required">*</span></div>
           <div class="radio-group">
