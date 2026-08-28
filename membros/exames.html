@@ -59,6 +59,60 @@
     gap: 1rem;
   }
   .enviados .quando { color: var(--text-muted); font-size: 0.85rem; white-space: nowrap; }
+
+  /* Escolha do modo de envio */
+  .modo-escolha {
+    display: flex;
+    gap: 1.75rem;
+    flex-wrap: wrap;
+    padding: 1rem 1.25rem;
+    background: var(--bg-soft);
+    border-left: 2px solid var(--accent);
+    border-radius: 2px;
+    margin: 1.75rem 0 2rem;
+  }
+  .modo-escolha label {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.95rem;
+    cursor: pointer;
+    margin: 0;
+    font-weight: 500;
+  }
+  .modo-escolha input { margin-right: 0.45rem; }
+
+  /* Lista de exames do laudo */
+  .grade-exames {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 0.4rem 1rem;
+    padding: 1rem 1.1rem;
+    background: var(--bg-soft);
+    border-radius: 2px;
+  }
+  .grade-exames label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+    font-size: 0.89rem;
+    font-weight: 400;
+    cursor: pointer;
+    margin: 0;
+    line-height: 1.35;
+  }
+  .grade-exames input { margin-top: 0.2rem; flex-shrink: 0; }
+
+  .link-botao {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-left: 0.4rem;
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    color: var(--accent);
+    text-decoration: underline;
+    cursor: pointer;
+  }
 </style>
 </head>
 <body class="membros">
@@ -102,7 +156,51 @@
       O envio está temporariamente indisponível. Escreva para a coordenação e ela orienta você.
     </div>
 
-    <form class="envio-form" id="formExame" autocomplete="off">
+    <div class="modo-escolha">
+      <label><input type="radio" name="modo" value="lote" checked> Tenho um laudo com vários exames</label>
+      <label><input type="radio" name="modo" value="unico"> Enviar um exame por vez</label>
+    </div>
+
+    <!-- ===== LAUDO COMPLETO ===== -->
+    <form class="envio-form" id="formLote" autocomplete="off">
+      <div class="campo">
+        <label for="lt-email">Seu email <span class="required">*</span></label>
+        <input type="email" id="lt-email" name="email" required>
+        <span class="ajuda">Use o mesmo email da inscrição.</span>
+      </div>
+
+      <div class="campo">
+        <label for="lt-nome">Seu nome completo <span class="required">*</span></label>
+        <input type="text" id="lt-nome" name="nome" required>
+      </div>
+
+      <div class="campo">
+        <label for="lt-data">Data da coleta <span class="required">*</span></label>
+        <input type="date" id="lt-data" name="data" required>
+        <span class="exame-aviso ajuda" id="lt-aviso" hidden></span>
+      </div>
+
+      <div class="campo">
+        <label for="lt-arquivos">Laudo <span class="required">*</span></label>
+        <input type="file" id="lt-arquivos" name="arquivos" accept="image/*,application/pdf" multiple required>
+        <span class="ajuda">PDF ou fotos. Pode selecionar vários arquivos de uma vez — se o laudo tem várias páginas, envie todas.</span>
+      </div>
+
+      <div class="campo">
+        <label>Quais exames estão neste laudo?</label>
+        <span class="ajuda" style="margin-bottom:0.6rem">
+          Opcional, mas ajuda a coordenação a saber o que ainda falta sem precisar abrir o arquivo.
+          <button type="button" class="link-botao" id="btnTodos">Marcar todos</button>
+        </span>
+        <div class="grade-exames" id="gradeExames"></div>
+      </div>
+
+      <div class="msg" id="msgLote"></div>
+      <button type="submit" class="btn" id="btnEnviarLote">Enviar laudo</button>
+    </form>
+
+    <!-- ===== UM EXAME POR VEZ ===== -->
+    <form class="envio-form" id="formExame" autocomplete="off" hidden>
       <div class="campo">
         <label for="ex-email">Seu email <span class="required">*</span></label>
         <input type="email" id="ex-email" name="email" required>
@@ -196,12 +294,24 @@
     document.getElementById('ex-valor').placeholder = achado ? achado[1] : 'Ex.: 76 mg/dL';
   });
 
-  // Mesma checagem de validade do formulário de inscrição
-  const campoData = document.getElementById('ex-data');
-  const aviso = document.getElementById('ex-aviso');
-  campoData.addEventListener('change', () => {
-    if (!campoData.value) { aviso.hidden = true; return; }
-    const d = new Date(campoData.value + 'T00:00:00');
+  // Lista de exames do laudo completo
+  const grade = document.getElementById('gradeExames');
+  EXAMES.forEach(([nome], i) => {
+    const l = document.createElement('label');
+    l.innerHTML = `<input type="checkbox" value="${nome}" id="lote-ex-${i}"> <span>${nome}</span>`;
+    grade.appendChild(l);
+  });
+  document.getElementById('btnTodos').addEventListener('click', () => {
+    const marcados = grade.querySelectorAll('input:checked').length;
+    const todos = marcados === EXAMES.length;
+    grade.querySelectorAll('input').forEach(c => { c.checked = !todos; });
+    document.getElementById('btnTodos').textContent = todos ? 'Marcar todos' : 'Desmarcar todos';
+  });
+
+  // Mesma checagem de validade do formulário de inscrição, nos dois modos
+  function conferirData(campo, aviso) {
+    if (!campo.value) { aviso.hidden = true; return; }
+    const d = new Date(campo.value + 'T00:00:00');
     const hoje = new Date(); hoje.setHours(0,0,0,0);
     if (d > hoje) {
       aviso.textContent = 'Data no futuro — confira se digitou certo.';
@@ -214,6 +324,23 @@
       aviso.className = 'exame-aviso ajuda ok';
     }
     aviso.hidden = false;
+  }
+
+  const campoData = document.getElementById('ex-data');
+  const aviso = document.getElementById('ex-aviso');
+  campoData.addEventListener('change', () => conferirData(campoData, aviso));
+
+  const campoDataLote = document.getElementById('lt-data');
+  const avisoLote = document.getElementById('lt-aviso');
+  campoDataLote.addEventListener('change', () => conferirData(campoDataLote, avisoLote));
+
+  // Alterna entre os dois modos
+  document.querySelectorAll('input[name=modo]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      const lote = radio.value === 'lote';
+      document.getElementById('formLote').hidden = !lote;
+      document.getElementById('formExame').hidden = lote;
+    });
   });
 
   // Guarda email e nome, para não redigitar a cada envio
@@ -222,10 +349,24 @@
     try {
       const d = JSON.parse(localStorage.getItem(CHAVE) || 'null');
       if (!d) return;
-      document.getElementById('ex-email').value = d.email || '';
-      document.getElementById('ex-nome').value = d.nome || '';
+      ['ex-email','lt-email'].forEach(id => { document.getElementById(id).value = d.email || ''; });
+      ['ex-nome','lt-nome'].forEach(id => { document.getElementById(id).value = d.nome || ''; });
     } catch {}
   })();
+
+  function guardarIdentificacao(email, nome) {
+    try { localStorage.setItem(CHAVE, JSON.stringify({ email, nome })); } catch {}
+    // mantém os dois formulários em sincronia
+    ['ex-email','lt-email'].forEach(id => { document.getElementById(id).value = email; });
+    ['ex-nome','lt-nome'].forEach(id => { document.getElementById(id).value = nome; });
+  }
+
+  function registrarEnviado(texto) {
+    const li = document.createElement('li');
+    li.innerHTML = `<span>${texto}</span><span class="quando">agora</span>`;
+    document.getElementById('listaEnviados').prepend(li);
+    document.getElementById('blocoEnviados').hidden = false;
+  }
 
   function arquivoParaBase64(file) {
     return new Promise((ok, falha) => {
@@ -237,6 +378,67 @@
   }
 
   if (!API) document.getElementById('msgOffline').classList.add('visivel');
+
+  // ===== Envio do laudo completo =====
+  document.getElementById('formLote').addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = document.getElementById('btnEnviarLote');
+    const msg = document.getElementById('msgLote');
+    msg.classList.remove('visivel', 'ok', 'erro');
+
+    const arquivos = [...document.getElementById('lt-arquivos').files];
+    if (!arquivos.length) {
+      msg.textContent = 'Anexe ao menos um arquivo.';
+      msg.classList.add('visivel', 'erro');
+      return;
+    }
+    if (!API) {
+      msg.textContent = 'O envio está indisponível no momento. Fale com a coordenação.';
+      msg.classList.add('visivel', 'erro');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Enviando…';
+    try {
+      const marcados = [...grade.querySelectorAll('input:checked')].map(c => c.value);
+      const dados = {
+        email: document.getElementById('lt-email').value.trim(),
+        nome:  document.getElementById('lt-nome').value.trim(),
+        exame: marcados.length ? marcados.join(', ') : 'Laudo completo (exames não especificados)',
+        data:  campoDataLote.value,
+        valor: ''
+      };
+      const convertidos = [];
+      for (const f of arquivos) convertidos.push(await arquivoParaBase64(f));
+
+      await fetch(API, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ acao: 'exame', dados, arquivos: convertidos })
+      });
+
+      guardarIdentificacao(dados.email, dados.nome);
+      const quantos = arquivos.length;
+      msg.textContent = `Laudo enviado — ${quantos} arquivo${quantos > 1 ? 's' : ''}. Se faltou algum exame, pode enviar depois.`;
+      msg.classList.add('visivel', 'ok');
+      registrarEnviado(marcados.length ? `Laudo com ${marcados.length} exames` : `Laudo completo (${quantos} arquivo${quantos > 1 ? 's' : ''})`);
+
+      document.getElementById('lt-arquivos').value = '';
+      campoDataLote.value = '';
+      avisoLote.hidden = true;
+      grade.querySelectorAll('input').forEach(c => { c.checked = false; });
+      document.getElementById('btnTodos').textContent = 'Marcar todos';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+      msg.textContent = 'Não foi possível enviar agora. Tente de novo em alguns minutos, ou fale com a coordenação.';
+      msg.classList.add('visivel', 'erro');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Enviar laudo';
+    }
+  });
 
   document.getElementById('formExame').addEventListener('submit', async e => {
     e.preventDefault();
@@ -278,16 +480,11 @@
         body: JSON.stringify({ acao: 'exame', dados, arquivo })
       });
 
-      try { localStorage.setItem(CHAVE, JSON.stringify({ email: dados.email, nome: dados.nome })); } catch {}
+      guardarIdentificacao(dados.email, dados.nome);
 
       msg.textContent = `${dados.exame} enviado. Pode enviar outro, se ainda faltar algum.`;
       msg.classList.add('visivel', 'ok');
-
-      const bloco = document.getElementById('blocoEnviados');
-      const li = document.createElement('li');
-      li.innerHTML = `<span>${dados.exame}</span><span class="quando">agora</span>`;
-      document.getElementById('listaEnviados').prepend(li);
-      bloco.hidden = false;
+      registrarEnviado(dados.exame);
 
       // Limpa só os campos do exame — email e nome ficam para o próximo
       sel.value = ''; campoData.value = '';
