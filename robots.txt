@@ -1,0 +1,15 @@
+# Ordo Vitae — retiroordovitae.com.br
+
+User-agent: *
+Allow: /
+
+# Áreas restritas: painel da coordenação e área dos participantes.
+# As páginas também trazem noindex, mas bloquear aqui evita o rastreamento.
+Disallow: /admin/
+Disallow: /membros/
+
+# O formulário de inscrição é enviado por link direto pela coordenação,
+# não deve aparecer em busca.
+Disallow: /inscricao.html
+
+Sitemap: https://retiroordovitae.com.br/sitemap.xml
