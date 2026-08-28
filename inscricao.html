@@ -105,6 +105,29 @@
   }
   .conditional.show { display: block; }
 
+  /* Anexo único com o laudo inteiro, para quem já fez a coleta */
+  .laudo-completo {
+    background: var(--bg-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 2px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .laudo-completo h4 {
+    font-family: var(--serif);
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+  }
+  .laudo-completo p { font-size: 0.93rem; margin-bottom: 0.85rem; }
+  .laudo-completo input[type=file] { font-size: 0.9rem; }
+  .laudo-completo .obs {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 0.85rem 0 0;
+  }
+
   /* Exames — cada um é um bloco: nome + situação, e os detalhes
      só aparecem quando a pessoa marca que realizou. */
   .exame-row {
@@ -604,6 +627,19 @@
             <strong>Responda todos</strong>, mesmo que seja para marcar "Não realizei" — nesse caso a coordenação envia o pedido para você. Se já fez, basta digitar o resultado; anexar o laudo é opcional.
           </p>
 
+          <div class="laudo-completo">
+            <h4>Já tem o laudo com vários exames?</h4>
+            <p>
+              Anexe aqui de uma vez, em vez de repetir o arquivo exame por exame.
+              Pode selecionar mais de um — se o laudo tem várias páginas, envie todas.
+            </p>
+            <input type="file" name="laudoCompleto" accept="image/*,application/pdf" multiple>
+            <p class="obs">
+              Mesmo anexando o laudo, marque abaixo o que foi realizado — é assim que a
+              coordenação sabe o que ainda falta pedir para você.
+            </p>
+          </div>
+
           <div id="examesContainer"></div>
         </div>
 
@@ -1018,7 +1054,16 @@
     const arquivos = {};
     for (const [k, v] of fd.entries()) {
       if (v instanceof File) {
-        if (v.size > 0) arquivos[k] = await fileToBase64(v);
+        if (v.size === 0) continue;
+        const convertido = await fileToBase64(v);
+        if (arquivos[k]) {
+          // Campo que aceita vários arquivos (o laudo completo): acumula
+          // em lista, senão só o último sobreviveria.
+          if (!Array.isArray(arquivos[k])) arquivos[k] = [arquivos[k]];
+          arquivos[k].push(convertido);
+        } else {
+          arquivos[k] = convertido;
+        }
       } else {
         dados[k] = v;
       }
