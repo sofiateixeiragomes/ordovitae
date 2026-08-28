@@ -127,6 +127,28 @@
     color: var(--text-muted);
     margin: 0.85rem 0 0;
   }
+  .atalho-marcar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--line);
+  }
+  .atalho-marcar span { font-size: 0.83rem; color: var(--text-muted); }
+  .btn-atalho {
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    padding: 0.5rem 1rem;
+    font-family: var(--sans);
+    font-size: 0.88rem;
+    font-weight: 500;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  .btn-atalho:hover { background: var(--accent-deep); }
 
   /* Exames — cada um é um bloco: nome + situação, e os detalhes
      só aparecem quando a pessoa marca que realizou. */
@@ -638,6 +660,12 @@
               Mesmo anexando o laudo, marque abaixo o que foi realizado — é assim que a
               coordenação sabe o que ainda falta pedir para você.
             </p>
+            <div class="atalho-marcar" id="atalhoMarcar" hidden>
+              <button type="button" class="btn-sm btn-atalho" id="btnTodosRealizados">
+                Marcar todos como realizados
+              </button>
+              <span>Depois é só desmarcar o que não estiver no laudo.</span>
+            </div>
           </div>
 
           <div id="examesContainer"></div>
@@ -832,6 +860,32 @@
         </div>
       `;
       container.appendChild(row);
+    });
+  })();
+
+  // Anexou o laudo? Oferece marcar tudo de uma vez. É um atalho explícito,
+  // acionado pela pessoa — nada é marcado automaticamente por trás.
+  (function atalhoDoLaudo() {
+    const campo = document.querySelector('input[name=laudoCompleto]');
+    const caixa = document.getElementById('atalhoMarcar');
+    const botao = document.getElementById('btnTodosRealizados');
+    if (!campo || !caixa || !botao) return;
+
+    campo.addEventListener('change', () => { caixa.hidden = !campo.files.length; });
+
+    botao.addEventListener('click', () => {
+      let marcados = 0;
+      document.querySelectorAll('.exame-row').forEach(linha => {
+        // Não desfaz o que a pessoa já respondeu
+        if (linha.querySelector('input[type=radio]:checked')) return;
+        const r = linha.querySelector('input[value=realizado]');
+        if (r) { r.click(); marcados++; }
+      });
+      botao.textContent = marcados
+        ? `${marcados} marcado${marcados > 1 ? 's' : ''} — preencha as datas abaixo`
+        : 'Todos já estavam respondidos';
+      botao.disabled = true;
+      document.getElementById('examesContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   })();
 
