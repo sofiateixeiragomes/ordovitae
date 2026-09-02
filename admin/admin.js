@@ -262,7 +262,7 @@ function desenharBiblioteca() {
 function preencherPainel() {
   const p = conteudo.painel || {};
   const f = $('formPainel');
-  ['fraseDia','faseAtual','faseDescricao','proximoEncontro','proximoLocal','linkPlantao']
+  ['fraseDia','faseAtual','faseDescricao','proximoEncontro','proximoLocal','linkPlantao','linkAutoavaliacao']
     .forEach(k => { if (f[k]) f[k].value = p[k] || ''; });
 }
 
