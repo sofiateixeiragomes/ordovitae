@@ -649,6 +649,13 @@
             <strong>Responda todos</strong>, mesmo que seja para marcar "Não realizei" — nesse caso a coordenação envia o pedido para você. Se já fez, basta digitar o resultado; anexar o laudo é opcional.
           </p>
 
+          <div class="field-group" style="max-width:280px">
+            <label for="dataColeta">Data da coleta</label>
+            <input type="date" id="dataColeta" name="dataColeta">
+            <span class="exame-aviso" id="avisoColeta" hidden></span>
+            <span class="field-hint">Preenche a data de todos os exames de uma vez. Se algum foi feito em outro dia, é só corrigir naquele exame.</span>
+          </div>
+
           <div class="laudo-completo">
             <h4>Já tem o laudo com vários exames?</h4>
             <p>
@@ -845,7 +852,7 @@
         <span class="aviso-pendente">Escolha uma das duas opções para continuar.</span>
         <div class="exame-detalhes" hidden>
           <div class="exame-campo">
-            <span class="campo-rot">Data do exame</span>
+            <span class="campo-rot">Data</span>
             <input type="date" name="${key}_data">
             <span class="exame-aviso" hidden></span>
           </div>
@@ -900,8 +907,14 @@
       const realizado = radio.value === 'realizado';
 
       detalhes.hidden = !realizado;
-      data.required = realizado;
       linha.classList.remove('pendente'); // respondeu, sai do destaque
+
+      // Herda a data da coleta, para não digitar a mesma data em cada exame
+      const coleta = document.getElementById('dataColeta');
+      if (realizado && coleta && coleta.value && !data.value) {
+        data.value = coleta.value;
+        conferirValidadeExame(data);
+      }
 
       if (!realizado) {
         // Limpa o que já tinha sido digitado, para não enviar dado órfão
@@ -1032,6 +1045,59 @@
   document.querySelectorAll('.exame-row input[type=date]').forEach(campo => {
     campo.addEventListener('change', () => conferirValidadeExame(campo));
     campo.addEventListener('blur', () => conferirValidadeExame(campo));
+  });
+
+  // A data da coleta é exigida apenas se sobrar algum exame realizado sem
+  // data própria — assim ninguém digita doze datas, e nenhum exame chega
+  // sem data, que tornaria a regra dos 6 meses inútil.
+  function atualizarObrigatoriedadeColeta() {
+    const coleta = document.getElementById('dataColeta');
+    if (!coleta) return;
+    const faltaAlguma = [...document.querySelectorAll('.exame-row')].some(linha => {
+      const feito = linha.querySelector('input[value=realizado]:checked');
+      const data = linha.querySelector('input[type=date]');
+      return feito && data && !data.value;
+    });
+    coleta.required = faltaAlguma;
+  }
+
+  // A data da coleta preenche todos os exames já marcados como realizados
+  // e que ainda estejam sem data.
+  (function ligarDataDaColeta() {
+    const coleta = document.getElementById('dataColeta');
+    const aviso = document.getElementById('avisoColeta');
+    if (!coleta) return;
+
+    coleta.addEventListener('change', () => {
+      conferirValidadeExame(coleta);
+
+      if (!coleta.value) return;
+      let preenchidos = 0;
+      document.querySelectorAll('.exame-row').forEach(linha => {
+        const marcado = linha.querySelector('input[value=realizado]:checked');
+        if (!marcado) return;
+        const data = linha.querySelector('input[type=date]');
+        if (data && !data.value) {
+          data.value = coleta.value;
+          conferirValidadeExame(data);
+          preenchidos++;
+        }
+      });
+      // Acrescenta o aviso sem apagar o de validade, que importa mais
+      if (preenchidos && aviso) {
+        aviso.textContent += ` Aplicada a ${preenchidos} exame${preenchidos > 1 ? 's' : ''}.`;
+        aviso.hidden = false;
+      }
+      atualizarObrigatoriedadeColeta();
+    });
+  })();
+
+  // Reavalia sempre que uma data individual ou um status mudar
+  document.querySelectorAll('.exame-row input[type=date]').forEach(c => {
+    c.addEventListener('change', atualizarObrigatoriedadeColeta);
+  });
+  document.querySelectorAll('.exame-row input[type=radio]').forEach(r => {
+    r.addEventListener('change', atualizarObrigatoriedadeColeta);
   });
 
   // Autosave em localStorage — o usuário pode retomar depois
