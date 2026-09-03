@@ -7,7 +7,7 @@
 const API = window.OV_API_URL || '';
 const CHAVE_SESSAO = 'ov_admin_senha';
 
-let conteudo = { comunicados: [], materiais: [], biblioteca: [], cronograma: [], painel: {} };
+let conteudo = { comunicados: [], materiais: [], publicacoes: [], biblioteca: [], cronograma: [], painel: {} };
 
 const FASES = {
   '1': 'Fase 1 — Cura da história de vida',
@@ -159,6 +159,7 @@ function desenharTudo() {
   desenharComunicados();
   desenharCronograma();
   desenharMateriais();
+  desenharPublicacoes();
   desenharBiblioteca();
   preencherPainel();
 }
@@ -237,6 +238,33 @@ function desenharMateriais() {
     </div>`).join('');
 }
 
+function desenharPublicacoes() {
+  const lista = $('listaPublicacoes');
+  const itens = (conteudo.publicacoes || []).slice()
+    .sort((a, b) => String(b.data).localeCompare(String(a.data)));
+  if (!itens.length) {
+    lista.innerHTML = '<div class="vazio">Nenhuma publicação ainda.</div>';
+    return;
+  }
+  lista.innerHTML = itens.map(p => {
+    const marcas = [esc(p.data), esc(p.tipo)];
+    if (String(p.destaque).toLowerCase() === 'sim') marcas.push('DESTAQUE');
+    if (String(p.publicado).toLowerCase() === 'nao') marcas.push('rascunho');
+    return `
+    <div class="item${marcaRascunho(p)}">
+      <div class="info">
+        <p class="meta">${marcas.join(' · ')}</p>
+        <h4>${esc(p.titulo)}</h4>
+        ${p.url ? `<p><a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.url)}</a></p>` : '<p>Sem link.</p>'}
+      </div>
+      <div class="botoes">
+        <button type="button" onclick="editarPublicacao('${esc(p.id)}')">Editar</button>
+        <button type="button" class="excluir" onclick="excluir('publicacao','${esc(p.id)}')">Excluir</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
 function desenharBiblioteca() {
   const lista = $('listaBiblioteca');
   const itens = (conteudo.biblioteca || []).slice()
@@ -294,6 +322,7 @@ async function salvar(tipo, form, campoArquivo) {
       form.reset();
       form.querySelector('[name=id]').value = '';
       if (campoArquivo) campoArquivo.value = '';
+      preencherDataHoje();
       await carregarConteudo();
     } else {
       toast('Erro ao salvar: ' + (r.erro || ''), true);
@@ -319,6 +348,16 @@ $('formMaterial').addEventListener('submit', e => {
     return;
   }
   salvar('material', e.target, $('mat-arquivo'));
+});
+$('formPublicacao').addEventListener('submit', e => {
+  e.preventDefault();
+  const dados = dadosDoForm(e.target);
+  const temArquivo = $('pub-arquivo').files.length > 0;
+  if (!dados.url && !temArquivo) {
+    toast('Informe um link ou envie um arquivo', true);
+    return;
+  }
+  salvar('publicacao', e.target, $('pub-arquivo'));
 });
 $('formReferencia').addEventListener('submit', e => {
   e.preventDefault();
@@ -362,6 +401,10 @@ function editarMaterial(id) {
   const m = (conteudo.materiais || []).find(x => String(x.id) === String(id));
   if (m) preencher($('formMaterial'), m, 'tituloFormMaterial', 'Editando material');
 }
+function editarPublicacao(id) {
+  const p = (conteudo.publicacoes || []).find(x => String(x.id) === String(id));
+  if (p) preencher($('formPublicacao'), p, 'tituloFormPublicacao', 'Editando publicação');
+}
 function editarReferencia(id) {
   const r = (conteudo.biblioteca || []).find(x => String(x.id) === String(id));
   if (r) preencher($('formReferencia'), r, 'tituloFormReferencia', 'Editando referência');
@@ -392,13 +435,23 @@ document.querySelectorAll('[data-limpar]').forEach(btn => {
     const titulos = {
       formComunicado: ['tituloFormComunicado', 'Novo comunicado'],
       formMaterial:   ['tituloFormMaterial', 'Novo material'],
+      formPublicacao: ['tituloFormPublicacao', 'Nova publicação'],
       formReferencia: ['tituloFormReferencia', 'Nova referência'],
       formModulo:     ['tituloFormModulo', 'Novo módulo']
     };
     const t = titulos[btn.dataset.limpar];
     if (t) $(t[0]).textContent = t[1];
+    preencherDataHoje();
   });
 });
 
-// Data de hoje já preenchida em novos comunicados
-$('com-data').value = new Date().toISOString().slice(0, 10);
+// Data de hoje já preenchida em novos comunicados e publicações — inclusive
+// depois de salvar ou limpar, para não ter que escolher a data toda vez.
+function preencherDataHoje() {
+  const hoje = new Date().toISOString().slice(0, 10);
+  ['com-data', 'pub-data'].forEach(id => {
+    const campo = $(id);
+    if (campo && !campo.value) campo.value = hoje;
+  });
+}
+preencherDataHoje();

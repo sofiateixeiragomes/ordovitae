@@ -58,6 +58,7 @@
     <button type="button" class="ativa" data-secao="comunicados">Comunicados</button>
     <button type="button" data-secao="cronograma">Cronograma</button>
     <button type="button" data-secao="materiais">Materiais por fase</button>
+    <button type="button" data-secao="publicacoes">Publicações</button>
     <button type="button" data-secao="biblioteca">Biblioteca</button>
     <button type="button" data-secao="painel">Painel inicial</button>
   </div>
@@ -244,6 +245,81 @@
       </div>
 
       <div class="lista" id="listaMateriais"></div>
+    </section>
+
+    <!-- ---------- PUBLICAÇÕES ---------- -->
+    <section class="secao" id="secao-publicacoes">
+      <h2>Publicações</h2>
+      <p class="descricao">Artigos, vídeos, áudios e outros conteúdos avulsos — não pertencem a nenhum módulo nem fase. Aparecem no painel inicial dos participantes (os mais recentes) e na página de publicações.</p>
+
+      <div class="form-card">
+        <h3 id="tituloFormPublicacao">Nova publicação</h3>
+        <form id="formPublicacao">
+          <input type="hidden" name="id">
+          <div class="linha">
+            <div class="campo">
+              <label for="pub-data">Data</label>
+              <input type="date" id="pub-data" name="data" required>
+              <span class="ajuda">Ordena a lista, do mais recente ao mais antigo.</span>
+            </div>
+            <div class="campo">
+              <label for="pub-tipo">Tipo</label>
+              <select id="pub-tipo" name="tipo" required>
+                <option>Artigo</option>
+                <option>Vídeo</option>
+                <option>Áudio</option>
+                <option>Podcast</option>
+                <option>Leitura</option>
+                <option>Oração</option>
+                <option>Documento</option>
+                <option>Outro</option>
+              </select>
+            </div>
+          </div>
+          <div class="campo">
+            <label for="pub-titulo">Título</label>
+            <input type="text" id="pub-titulo" name="titulo" required>
+          </div>
+          <div class="campo">
+            <label for="pub-descricao">Descrição</label>
+            <textarea id="pub-descricao" name="descricao" style="min-height:90px"></textarea>
+            <span class="ajuda">Duas ou três linhas dizendo do que se trata e por que vale a leitura. Opcional.</span>
+          </div>
+          <div class="campo">
+            <label for="pub-url">Link</label>
+            <input type="url" id="pub-url" name="url" placeholder="https://…">
+            <span class="ajuda">YouTube, site, Drive. Deixe vazio se for enviar um arquivo abaixo.</span>
+          </div>
+          <div class="campo">
+            <label for="pub-arquivo">Ou enviar arquivo</label>
+            <input type="file" id="pub-arquivo" name="arquivo">
+            <span class="ajuda">PDF, áudio, imagem. O arquivo vai para o Drive e o link é gerado automaticamente.</span>
+          </div>
+          <div class="linha">
+            <div class="campo">
+              <label for="pub-destaque">Destacar no painel?</label>
+              <select id="pub-destaque" name="destaque">
+                <option value="nao">Não</option>
+                <option value="sim">Sim — fixar no topo</option>
+              </select>
+              <span class="ajuda">O destaque fica no topo da lista, mesmo que haja publicações mais novas.</span>
+            </div>
+            <div class="campo">
+              <label for="pub-publicado">Situação</label>
+              <select id="pub-publicado" name="publicado">
+                <option value="sim">Publicado</option>
+                <option value="nao">Rascunho</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-acoes">
+            <button type="submit" class="btn-sm btn-primario">Salvar publicação</button>
+            <button type="button" class="btn-sm btn-neutro" data-limpar="formPublicacao">Limpar</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="lista" id="listaPublicacoes"></div>
     </section>
 
     <!-- ---------- BIBLIOTECA ---------- -->

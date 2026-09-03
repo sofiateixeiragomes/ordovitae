@@ -156,6 +156,43 @@
     }).join('');
   }
 
+  // Publicações avulsas: artigos, vídeos, áudios sem vínculo com módulo ou fase.
+  // Entram em dois lugares — as mais recentes no painel, todas na página própria.
+  function cartaoPublicacao(p) {
+    const destaque = String(p.destaque).toLowerCase() === 'sim';
+    const titulo = p.url
+      ? `<a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.titulo)}</a>`
+      : esc(p.titulo);
+    return `
+      <article class="pub-card${destaque ? ' destaque' : ''}">
+        <p class="pub-meta">
+          <span class="pub-tipo">${esc(p.tipo || 'Publicação')}</span>
+          ${p.data ? `<span class="pub-data">${esc(formatarData(p.data))}</span>` : ''}
+        </p>
+        <h3>${titulo}</h3>
+        ${p.descricao ? paragrafos(p.descricao) : ''}
+        ${p.url ? `<p class="pub-acao"><a href="${esc(p.url)}" target="_blank" rel="noopener">Abrir →</a></p>` : ''}
+      </article>`;
+  }
+
+  function renderPublicacoes(d) {
+    const itens = d.publicacoes || [];
+
+    // Painel inicial — só as mais recentes, para não competir com o resto
+    const noPainel = document.getElementById('ovPublicacoesPainel');
+    if (noPainel && itens.length) {
+      noPainel.innerHTML = itens.slice(0, 4).map(cartaoPublicacao).join('');
+    }
+
+    // Página de publicações — todas
+    const alvo = document.getElementById('ovPublicacoes');
+    if (alvo) {
+      alvo.innerHTML = itens.length
+        ? itens.map(cartaoPublicacao).join('')
+        : '<p class="placeholder-note">Ainda não há publicações. Assim que a coordenação publicar um artigo, vídeo ou áudio, ele aparece aqui.</p>';
+    }
+  }
+
   function renderBiblioteca(d) {
     const alvo = document.getElementById('ovBiblioteca');
     if (!alvo) return;
@@ -192,6 +229,7 @@
       renderComunicados(d);
       renderCronograma(d);
       renderMateriais(d);
+      renderPublicacoes(d);
       renderBiblioteca(d);
     } catch (err) {
       // Silencioso de propósito: o conteúdo de exemplo continua na tela

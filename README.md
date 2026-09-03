@@ -14,7 +14,7 @@ Site estático, sem framework nem build. Para editar, basta abrir o arquivo e sa
 | `inscricao.html` | Formulário de inscrição (link enviado pela coordenação) |
 | `contato.html` | Contato |
 | `participantes.html` | Porta de entrada da área de participantes |
-| `membros/` | Área da turma — painel, cronograma, comunicados, materiais, biblioteca |
+| `membros/` | Área da turma — painel, cronograma, comunicados, materiais, publicações, biblioteca |
 | `admin/` | Painel da coordenação para publicar conteúdo |
 
 ## Configuração
