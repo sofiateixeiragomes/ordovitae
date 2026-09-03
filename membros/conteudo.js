@@ -286,12 +286,31 @@
   // -----------------------------------------------------
   // Busca
   // -----------------------------------------------------
+  // O Apps Script às vezes responde 404 ou demora demais — por conta do Google,
+  // não do conteúdo. Insistir duas vezes evita a área aparecer vazia à toa.
+  async function buscarConteudo(tentativas) {
+    for (let i = 0; i < tentativas; i++) {
+      try {
+        const resp = await fetch(API + '?acao=conteudo');
+        if (resp.ok) {
+          const d = await resp.json();
+          if (d && d.ok !== false) return d;
+        }
+      } catch (err) {
+        // rede caiu no meio: tenta de novo
+      }
+      if (i < tentativas - 1) {
+        await new Promise(r => setTimeout(r, 2000 * (i + 1)));
+      }
+    }
+    return null;
+  }
+
   async function carregar() {
     if (!API) return;
     try {
-      const resp = await fetch(API + '?acao=conteudo');
-      const d = await resp.json();
-      if (!d || d.ok === false) return;
+      const d = await buscarConteudo(3);
+      if (!d) return;
       renderPainel(d);
       renderComunicados(d);
       renderCronograma(d);

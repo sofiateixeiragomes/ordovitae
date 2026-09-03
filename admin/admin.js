@@ -42,14 +42,29 @@ function senhaAtual() {
 }
 
 // Chamada ao backend. Content-Type text/plain evita o preflight do CORS.
+// O Apps Script tem manhãs ruins: responde 404, demora um minuto, cai no meio.
+// Leitura pode ser repetida à vontade; gravação não — repetir criaria itens
+// duplicados, que é exatamente o que se quer evitar.
+const ACOES_DE_LEITURA = ['listar'];
+
 async function chamar(payload) {
   if (!API) return { ok: false, erro: 'offline' };
-  const resp = await fetch(API, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: JSON.stringify(Object.assign({ senha: senhaAtual() }, payload))
-  });
-  return resp.json();
+  const tentativas = ACOES_DE_LEITURA.indexOf(payload.acao) >= 0 ? 3 : 1;
+  let ultimoErro;
+  for (let i = 0; i < tentativas; i++) {
+    try {
+      const resp = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(Object.assign({ senha: senhaAtual() }, payload))
+      });
+      return await resp.json();
+    } catch (err) {
+      ultimoErro = err;
+      if (i < tentativas - 1) await new Promise(r => setTimeout(r, 1500 * (i + 1)));
+    }
+  }
+  throw ultimoErro;
 }
 
 const LIMITE_ARQUIVO = 20 * 1024 * 1024;
@@ -312,8 +327,9 @@ async function salvar(tipo, form, campoArquivo) {
   const rotulo = btn.textContent;
   btn.textContent = 'Salvando…';
 
+  const dados = dadosDoForm(form);
+
   try {
-    const dados = dadosDoForm(form);
     let arquivo = null;
     if (campoArquivo && campoArquivo.files && campoArquivo.files[0]) {
       const escolhido = campoArquivo.files[0];
@@ -338,10 +354,44 @@ async function salvar(tipo, form, campoArquivo) {
       toast('Erro ao salvar: ' + (r.erro || ''), true);
     }
   } catch (err) {
-    toast('Sem conexão com o servidor', true);
+    // A resposta pode ter se perdido no caminho depois de o item já estar
+    // gravado. Conferir antes de acusar erro evita a publicação em dobro.
+    toast('O servidor demorou a responder. Conferindo se salvou…', true, 8);
+    const salvou = await conferirSeSalvou(tipo, dados);
+    if (salvou) {
+      toast('Salvou sim, apesar do erro. Não envie de novo.', false, 10);
+      form.reset();
+      form.querySelector('[name=id]').value = '';
+      if (campoArquivo) campoArquivo.value = '';
+      preencherDataHoje();
+    } else {
+      toast('Não salvou — o servidor não respondeu. Tente de novo em alguns segundos.', true, 10);
+    }
   } finally {
     btn.disabled = false;
     btn.textContent = rotulo;
+  }
+}
+
+// Recarrega a lista e procura o que se tentou gravar. Item novo é reconhecido
+// pelo título; edição, pelo id.
+const LISTA_DO_TIPO = {
+  comunicado: 'comunicados',
+  material:   'materiais',
+  publicacao: 'publicacoes',
+  referencia: 'biblioteca',
+  modulo:     'cronograma'
+};
+
+async function conferirSeSalvou(tipo, dados) {
+  try {
+    await carregarConteudo();
+    const lista = conteudo[LISTA_DO_TIPO[tipo]] || [];
+    if (dados.id) return lista.some(x => String(x.id) === String(dados.id));
+    const titulo = String(dados.titulo || '').trim().toLowerCase();
+    return !!titulo && lista.some(x => String(x.titulo || '').trim().toLowerCase() === titulo);
+  } catch (err) {
+    return false;
   }
 }
 
