@@ -15,6 +15,7 @@ Site estático, sem framework nem build. Para editar, basta abrir o arquivo e sa
 | `contato.html` | Contato |
 | `participantes.html` | Porta de entrada da área de participantes |
 | `membros/` | Área da turma — painel, cronograma, comunicados, materiais, publicações, biblioteca |
+| `membros/arquivos/` | PDFs das publicações. O Drive da Shalom não libera link para fora do domínio, então os arquivos dos participantes moram aqui e o endereço vai no campo *link* do painel |
 | `admin/` | Painel da coordenação para publicar conteúdo |
 
 ## Configuração

@@ -28,13 +28,13 @@ function esc(s) {
 }
 
 let timerToast;
-function toast(msg, erro) {
+function toast(msg, erro, segundos) {
   const el = $('toast');
   el.textContent = msg;
   el.classList.toggle('erro', !!erro);
   el.classList.add('visivel');
   clearTimeout(timerToast);
-  timerToast = setTimeout(() => el.classList.remove('visivel'), 3000);
+  timerToast = setTimeout(() => el.classList.remove('visivel'), (segundos || 3) * 1000);
 }
 
 function senhaAtual() {
@@ -318,7 +318,9 @@ async function salvar(tipo, form, campoArquivo) {
     }
     const r = await chamar({ acao: 'salvar', tipo, dados, arquivo });
     if (r.ok) {
-      toast('Salvo');
+      // O servidor avisa quando o arquivo subiu mas ficou inacessível aos
+      // participantes — esse recado precisa durar mais que um "Salvo".
+      toast(r.aviso ? 'Salvo. ' + r.aviso : 'Salvo', !!r.aviso, r.aviso ? 14 : 3);
       form.reset();
       form.querySelector('[name=id]').value = '';
       if (campoArquivo) campoArquivo.value = '';
