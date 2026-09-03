@@ -175,13 +175,80 @@
       </article>`;
   }
 
+  // No painel inicial a publicação precisa convidar à leitura: a mais recente
+  // (ou a destacada) vira um cartão grande e clicável, as demais viram linhas.
+  const ICONES_PUB = [
+    [/v[ií]deo/i, '▶'],
+    [/[áa]udio|podcast/i, '♪'],
+    [/documento|pdf|texto/i, '▤'],
+  ];
+
+  function iconePub(tipo) {
+    const t = String(tipo || '');
+    for (const [re, icone] of ICONES_PUB) if (re.test(t)) return icone;
+    return '▣';
+  }
+
+  function resumo(texto, limite) {
+    const limpo = String(texto || '').replace(/\s+/g, ' ').trim();
+    return limpo.length > limite ? limpo.slice(0, limite - 1).trimEnd() + '…' : limpo;
+  }
+
+  // Sem link nem arquivo não há o que abrir: o cartão vira texto, não promessa.
+  function aberturaPub(p, classe) {
+    return p.url
+      ? `<a class="${classe}" href="${esc(p.url)}" target="_blank" rel="noopener">`
+      : `<div class="${classe} sem-link">`;
+  }
+
+  function fechamentoPub(p) {
+    return p.url ? '</a>' : '</div>';
+  }
+
+  function metaPub(p) {
+    return `
+      <span class="pub-icone" aria-hidden="true">${iconePub(p.tipo)}</span>
+      <span class="pub-tipo">${esc(p.tipo || 'Publicação')}</span>
+      ${p.data ? `<span class="pub-data">${esc(formatarData(p.data))}</span>` : ''}`;
+  }
+
+  function cartaoPainelDestaque(p) {
+    const desc = resumo(p.descricao, 180);
+    return `
+      ${aberturaPub(p, 'pub-destaque')}
+        <p class="pub-meta">${metaPub(p)}</p>
+        <h3>${esc(p.titulo)}</h3>
+        ${desc ? `<p class="pub-resumo">${esc(desc)}</p>` : ''}
+        ${p.url ? '<span class="pub-cta">Ler agora →</span>' : ''}
+      ${fechamentoPub(p)}`;
+  }
+
+  function linhaPainel(p) {
+    return `
+      ${aberturaPub(p, 'pub-mini')}
+        <span class="pub-icone" aria-hidden="true">${iconePub(p.tipo)}</span>
+        <span class="pub-mini-texto">
+          <span class="pub-mini-titulo">${esc(p.titulo)}</span>
+          <span class="pub-meta">
+            <span class="pub-tipo">${esc(p.tipo || 'Publicação')}</span>
+            ${p.data ? `<span class="pub-data">${esc(formatarData(p.data))}</span>` : ''}
+          </span>
+        </span>
+      ${fechamentoPub(p)}`;
+  }
+
   function renderPublicacoes(d) {
     const itens = d.publicacoes || [];
 
     // Painel inicial — só as mais recentes, para não competir com o resto
     const noPainel = document.getElementById('ovPublicacoesPainel');
     if (noPainel && itens.length) {
-      noPainel.innerHTML = itens.slice(0, 4).map(cartaoPublicacao).join('');
+      const destacada = itens.find(function (p) {
+        return String(p.destaque).toLowerCase() === 'sim';
+      }) || itens[0];
+      const demais = itens.filter(function (p) { return p !== destacada; }).slice(0, 3);
+      noPainel.innerHTML = cartaoPainelDestaque(destacada) +
+        (demais.length ? `<div class="pub-minis">${demais.map(linhaPainel).join('')}</div>` : '');
     }
 
     // Página de publicações — todas
