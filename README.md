@@ -15,7 +15,7 @@ Site estático, sem framework nem build. Para editar, basta abrir o arquivo e sa
 | `contato.html` | Contato |
 | `participantes.html` | Porta de entrada da área de participantes |
 | `membros/` | Área da turma — painel, cronograma, comunicados, materiais, publicações, biblioteca |
-| `membros/arquivos/` | PDFs das publicações. O Drive da Shalom não libera link para fora do domínio, então os arquivos dos participantes moram aqui e o endereço vai no campo *link* do painel |
+| `membros/arquivos/` | Arquivos das publicações e materiais, gravados aqui pelo painel de administração (ver *Arquivos das publicações*) |
 | `admin/` | Painel da coordenação para publicar conteúdo |
 
 ## Configuração
@@ -33,6 +33,14 @@ O backend é um Google Apps Script ligado a uma planilha do Sheets. Ele recebe a
 **O código do backend não fica neste repositório** — ele contém os identificadores da planilha e da pasta do Drive. Está guardado com a coordenação, fora do site.
 
 A senha do painel de administração é conferida no servidor, não no navegador.
+
+### Arquivos das publicações
+
+O Drive da Associação não libera arquivo por link para fora do domínio `comshalom.org`: o participante recebe "peça acesso" e nunca abre. Por isso o arquivo enviado pelo painel não vai para o Drive — o backend o grava neste repositório, em `membros/arquivos/`, pela API do GitHub, e usa o endereço do site como link da publicação.
+
+Para isso o Apps Script precisa de um token do GitHub com permissão de escrita no repositório, guardado nas Propriedades do Script como `GITHUB_TOKEN` (fine-grained, *Contents: Read and write*, só neste repositório). Sem o token o envio cai de volta no Drive e o painel avisa que os participantes não vão conseguir abrir.
+
+Consequência para quem mexe no site: **o painel escreve direto na branch `main`**. Antes de subir alterações locais, `git pull` — senão o push é recusado.
 
 ## Publicação
 

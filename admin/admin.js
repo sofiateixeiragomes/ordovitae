@@ -52,6 +52,8 @@ async function chamar(payload) {
   return resp.json();
 }
 
+const LIMITE_ARQUIVO = 20 * 1024 * 1024;
+
 function arquivoParaBase64(file) {
   return new Promise((ok, falha) => {
     const leitor = new FileReader();
@@ -314,13 +316,19 @@ async function salvar(tipo, form, campoArquivo) {
     const dados = dadosDoForm(form);
     let arquivo = null;
     if (campoArquivo && campoArquivo.files && campoArquivo.files[0]) {
-      arquivo = await arquivoParaBase64(campoArquivo.files[0]);
+      const escolhido = campoArquivo.files[0];
+      // Acima disso o envio costuma falhar no caminho. Melhor dizer antes.
+      if (escolhido.size > LIMITE_ARQUIVO) {
+        toast('Arquivo grande demais (limite de 20 MB). Hospede em outro lugar e use o campo "link".', true, 10);
+        return;
+      }
+      arquivo = await arquivoParaBase64(escolhido);
     }
     const r = await chamar({ acao: 'salvar', tipo, dados, arquivo });
     if (r.ok) {
       // O servidor avisa quando o arquivo subiu mas ficou inacessível aos
       // participantes — esse recado precisa durar mais que um "Salvo".
-      toast(r.aviso ? 'Salvo. ' + r.aviso : 'Salvo', !!r.aviso, r.aviso ? 14 : 3);
+      toast(r.aviso ? 'Salvo. ' + r.aviso : 'Salvo', !!r.alerta, r.aviso ? 14 : 3);
       form.reset();
       form.querySelector('[name=id]').value = '';
       if (campoArquivo) campoArquivo.value = '';
