@@ -1,12 +1,13 @@
 :root {
-  --bg: #F4F1E8;
-  --bg-soft: #DCE9DF;
-  --text: #1F2E2E;
-  --text-muted: #4F605E;
-  --accent: #2D6457;
-  --accent-deep: #224E44;
-  --accent-warm: #7FB3A0;
-  --institutional: #1F4D60;
+  /* Paleta da arte final do retiro */
+  --bg: #EDE9E1;          /* creme */
+  --bg-soft: #CFE5DE;     /* verde-água enevoado */
+  --text: #24302E;
+  --text-muted: #56625F;
+  --accent: #8B3A3E;      /* vinho do "VITAE" */
+  --accent-deep: #6E2B2F;
+  --accent-warm: #5FA394; /* linha verde-água */
+  --institutional: #2F5F58;
   --line: rgba(31, 46, 46, 0.12);
   --serif: 'Cormorant Garamond', Georgia, serif;
   --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;

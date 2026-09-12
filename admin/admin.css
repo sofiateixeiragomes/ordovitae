@@ -229,7 +229,7 @@ body.admin { background: var(--bg); }
   display: none;
 }
 .aviso.visivel { display: block; }
-.aviso.ok { background: #DCE9DF; color: #1F4A38; border-left: 3px solid var(--accent); }
+.aviso.ok { background: var(--bg-soft); color: #1F4A38; border-left: 3px solid var(--accent); }
 .aviso.erro { background: #FDECE7; color: #A34432; border-left: 3px solid #A34432; }
 .aviso.info { background: var(--bg-soft); color: var(--text-muted); border-left: 3px solid var(--accent-warm); }
 
